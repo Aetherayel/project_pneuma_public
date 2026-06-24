@@ -1,0 +1,286 @@
+{% if not undercurrent_done.get(visible_phase) %}
+{% if visible_phase == "morning" %}
+  <form class="phase-card" method="post" action="/notion/undercurrent/morning/ui">
+    <input type="hidden" name="return_to" value="{{ return_to|default('/') }}" />
+    <h3>Morning Watch</h3>
+
+    <div class="uc-grid">
+      <div class="slider-field">
+        <label>Morning Energy</label>
+        <input type="range" name="morning_energy" min="1" max="5" value="3" required />
+        <div class="slider-scale"><span>1</span><span>5</span></div>
+      </div>
+      <div class="slider-field">
+        <label>Morning Clarity</label>
+        <input type="range" name="morning_clarity" min="1" max="5" value="3" required />
+        <div class="slider-scale"><span>1</span><span>5</span></div>
+      </div>
+      <div class="slider-field">
+        <label>Morning Mood</label>
+        <input type="range" name="morning_mood" min="1" max="5" value="3" required />
+        <div class="slider-scale"><span>1</span><span>5</span></div>
+      </div>
+      <div class="slider-field">
+        <label>Morning Stress</label>
+        <input type="range" name="morning_stress" min="1" max="5" value="3" required />
+        <div class="slider-scale"><span>1</span><span>5</span></div>
+      </div>
+      <div class="slider-field">
+        <label>Morning Spiritual Orientation</label>
+        <input type="range" name="morning_spiritual_orientation" min="1" max="5" value="3" required />
+        <div class="slider-scale"><span>1</span><span>5</span></div>
+      </div>
+      <div>
+        <label>Morning Wellness</label>
+        <input type="number" name="morning_wellness" step="1" required />
+      </div>
+      <div>
+        <label>Sleep Score</label>
+        <input type="number" name="sleep_score" step="1" required />
+      </div>
+      <div>
+        <label>Bedtime</label>
+        <input type="time" name="bedtime" step="60" required />
+      </div>
+      <div>
+        <label>Base HR</label>
+        <input type="number" name="base_hr" step="1" required />
+      </div>
+    </div>
+
+    <div style="margin-top:12px;">
+      <label>Morning State Tags</label>
+      <div class="choice-grid">
+        {% for option in morning_state_tag_options %}
+          <label class="choice">
+            <input type="checkbox" name="morning_state_tags" value="{{ option }}" />
+            <span>{{ option }}</span>
+          </label>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div style="margin-top:12px;">
+      <label>Main Drag</label>
+      <div class="choice-grid">
+        {% for option in main_drag_options %}
+          <label class="choice">
+            <input type="checkbox" name="main_drag" value="{{ option }}" />
+            <span>{{ option }}</span>
+          </label>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div style="margin-top:12px;">
+      <label>Daily Intent</label>
+      <textarea name="daily_intent" placeholder="Name the next faithful direction for the day." required></textarea>
+    </div>
+
+    <div style="margin-top:12px;">
+      <label>Morning Notes</label>
+      <textarea name="morning_notes" placeholder="Optional witness from the morning."></textarea>
+    </div>
+
+    <div class="row" style="margin-top:12px;">
+      <button class="btn primary" type="submit">Seal Morning Watch</button>
+    </div>
+  </form>
+{% elif visible_phase == "midday" %}
+  <form class="phase-card" method="post" action="/notion/undercurrent/midday/ui">
+    <input type="hidden" name="return_to" value="{{ return_to|default('/') }}" />
+    <h3>Midday Bearing</h3>
+
+    <div class="uc-grid">
+      <div class="slider-field">
+        <label>Midday Energy</label>
+        <input type="range" name="midday_energy" min="1" max="5" value="3" required />
+        <div class="slider-scale"><span>1</span><span>5</span></div>
+      </div>
+      <div class="slider-field">
+        <label>Midday Focus</label>
+        <input type="range" name="midday_focus" min="1" max="5" value="3" required />
+        <div class="slider-scale"><span>1</span><span>5</span></div>
+      </div>
+      <div>
+        <label>Midday Wellness</label>
+        <input type="number" name="midday_wellness" step="1" required />
+      </div>
+      <div>
+        <label>Midday Drift</label>
+        <select name="midday_drift" required>
+          <option value="">Select one</option>
+          {% for option in midday_drift_options %}
+            <option value="{{ option }}">{{ option }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <div style="margin-top:12px;">
+      <label>Midday Need</label>
+      <div class="choice-grid">
+        {% for option in midday_need_options %}
+          <label class="choice">
+            <input type="checkbox" name="midday_need" value="{{ option }}" />
+            <span>{{ option }}</span>
+          </label>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div style="margin-top:12px;">
+      <label>Midday Notes</label>
+      <textarea name="midday_notes" placeholder="Optional witness from midday."></textarea>
+    </div>
+
+    <div class="row" style="margin-top:12px;">
+      <button class="btn primary" type="submit">Seal Midday Bearing</button>
+    </div>
+  </form>
+{% elif visible_phase == "evening" %}
+  <form class="phase-card" method="post" action="/notion/undercurrent/evening/ui">
+    <input type="hidden" name="return_to" value="{{ return_to|default('/') }}" />
+    <h3>Evening Reckoning</h3>
+
+    <div class="uc-grid">
+      <div class="slider-field">
+        <label>Day Score</label>
+        <input type="range" name="day_score" min="1" max="5" value="3" required />
+        <div class="slider-scale"><span>1</span><span>5</span></div>
+      </div>
+      <div class="slider-field">
+        <label>Evening Spiritual Orientation</label>
+        <input type="range" name="evening_spiritual_orientation" min="1" max="5" value="3" required />
+        <div class="slider-scale"><span>1</span><span>5</span></div>
+      </div>
+      <div>
+        <label>Evening Wellness</label>
+        <input type="number" name="evening_wellness" step="1" required />
+      </div>
+      <div>
+        <label>Alignment</label>
+        <select name="alignment" required>
+          <option value="">Select one</option>
+          {% for option in alignment_options %}
+            <option value="{{ option }}">{{ option }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label>State Shift</label>
+        <select name="state_shift" required>
+          <option value="">Select one</option>
+          {% for option in undercurrent_state_shift_options %}
+            <option value="{{ option }}">{{ option }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label>State Shift Intensity</label>
+        <select name="state_shift_intensity" required>
+          <option value="">Select one</option>
+          {% for option in state_shift_intensity_options %}
+            <option value="{{ option }}">{{ option }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label>Regulation Response</label>
+        <select name="regulation_response" required>
+          <option value="">Select one</option>
+          {% for option in regulation_response_options %}
+            <option value="{{ option }}">{{ option }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label>Most Draining</label>
+        <select name="most_draining" required>
+          <option value="">Select one</option>
+          {% for option in most_draining_options %}
+            <option value="{{ option }}">{{ option }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <div style="margin-top:12px;">
+      <label>Most Restorative</label>
+      <select name="most_restorative" required>
+        <option value="">Select one</option>
+        {% for option in most_restorative_options %}
+          <option value="{{ option }}">{{ option }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div style="margin-top:12px;">
+      <label>Primary Disruptor</label>
+      <div class="choice-grid">
+        {% for option in primary_disruptor_options %}
+          <label class="choice">
+            <input type="checkbox" name="primary_disruptor" value="{{ option }}" />
+            <span>{{ option }}</span>
+          </label>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div style="margin-top:12px;">
+      <label>Carryover</label>
+      <div class="choice-grid">
+        {% for option in carryover_options %}
+          <label class="choice">
+            <input type="checkbox" name="carryover" value="{{ option }}" />
+            <span>{{ option }}</span>
+          </label>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div style="margin-top:12px;">
+      <label>Neglected Domain</label>
+      <div class="choice-grid">
+        {% for option in neglected_domain_options %}
+          <label class="choice">
+            <input type="checkbox" name="neglected_domain" value="{{ option }}" />
+            <span>{{ option }}</span>
+          </label>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div style="margin-top:12px;">
+      <label>Tomorrow Need</label>
+      <div class="choice-grid">
+        {% for option in tomorrow_need_options %}
+          <label class="choice">
+            <input type="checkbox" name="tomorrow_need" value="{{ option }}" />
+            <span>{{ option }}</span>
+          </label>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div style="margin-top:12px;">
+      <label>Reflection Note</label>
+      <textarea name="reflection_note" placeholder="What stands out from the day?" required></textarea>
+    </div>
+
+    <div style="margin-top:12px;">
+      <label>Gratitude Note</label>
+      <textarea name="gratitude_note" placeholder="What are you thankful for?" required></textarea>
+    </div>
+
+    <div style="margin-top:12px;">
+      <label>Lesson</label>
+      <textarea name="lesson" placeholder="What did the day teach you?" required></textarea>
+    </div>
+
+    <div class="row" style="margin-top:12px;">
+      <button class="btn primary" type="submit">Seal Evening Reckoning</button>
+    </div>
+  </form>
+{% endif %}
+{% endif %}

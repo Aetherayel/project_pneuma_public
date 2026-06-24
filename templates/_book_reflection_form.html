@@ -1,0 +1,154 @@
+<details class="panel panel-toggle">
+  <summary>
+    <div class="panel-toggle-copy">
+      <h2>Book Reflections</h2>
+      <div class="small">append a chapter note to the book page and log The Signal Field</div>
+    </div>
+    <div class="panel-toggle-meta">
+      {% if library_books_error %}
+        <span class="small">{{ library_books_error }}</span>
+      {% else %}
+        <span class="small">{{ library_books_available_count }} unfinished books</span>
+      {% endif %}
+      <span class="panel-toggle-caret" aria-hidden="true">+</span>
+    </div>
+  </summary>
+
+  <div class="bd">
+    {% if library_books_error %}
+      <div class="hint">{{ library_books_error }}</div>
+    {% else %}
+      <form id="book-reflection-form" class="phase-card" method="post" action="/notion/library/chapter-reflections/ui">
+        <input type="hidden" name="return_to" value="{{ return_to|default('/') }}" />
+
+        <h3>Log a Chapter Reflection</h3>
+        <p class="phase-copy">Choose an unfinished book from Library or add a new one, then save the reflection to the book page and move its reading progress forward.</p>
+
+        <div>
+          <label for="book-selection">Book</label>
+          <select id="book-selection" name="book_selection" required>
+            <option value="">Select a book</option>
+            {% for book in library_books %}
+              <option
+                value="{{ book.page_id }}"
+                data-progress="{{ book.chapters_complete_display }}"
+                data-completion="{% if book.completion_percent is not none %}{{ '%.1f'|format(book.completion_percent) }}{% endif %}"
+              >
+                {{ book.title }}
+              </option>
+            {% endfor %}
+            <option value="__new__">Add a new book...</option>
+          </select>
+        </div>
+
+        <div id="new-book-fields" class="uc-grid" hidden>
+          <div>
+            <label for="new-book-title">New Book Title</label>
+            <input
+              id="new-book-title"
+              type="text"
+              name="new_book_title"
+              placeholder="Book title"
+            />
+          </div>
+          <div>
+            <label for="new-book-total-chapters">Total Chapters</label>
+            <input
+              id="new-book-total-chapters"
+              type="number"
+              name="total_chapters"
+              min="1"
+              step="1"
+              placeholder="12"
+            />
+          </div>
+        </div>
+
+        <div class="uc-grid">
+          <div>
+            <label for="book-reflection-chapter">Chapter</label>
+            <input
+              id="book-reflection-chapter"
+              type="number"
+              name="chapter"
+              min="1"
+              step="1"
+              placeholder="5"
+              required
+            />
+          </div>
+        </div>
+
+        <div>
+          <label for="book-reflection-note">Reflection</label>
+          <textarea
+            id="book-reflection-note"
+            name="reflection_note"
+            placeholder="What stood out, landed, challenged, or changed in this chapter?"
+            required
+          ></textarea>
+        </div>
+
+        <div id="book-reflection-selected" class="intent-banner empty" hidden>
+          <div class="intent-label">Selected Book</div>
+          <p id="book-reflection-selected-copy"></p>
+        </div>
+
+        <div id="book-reflection-hint" class="hint">Select an unfinished book from Library, or add a new one.</div>
+
+        <div class="row" style="margin-top:12px;">
+          <button class="btn primary" type="submit">Log Chapter Reflection</button>
+        </div>
+      </form>
+    {% endif %}
+  </div>
+</details>
+
+<script>
+  (function () {
+    const form = document.getElementById('book-reflection-form');
+    if (!form) {
+      return;
+    }
+
+    const selection = document.getElementById('book-selection');
+    const newFields = document.getElementById('new-book-fields');
+    const newTitle = document.getElementById('new-book-title');
+    const newTotal = document.getElementById('new-book-total-chapters');
+    const hint = document.getElementById('book-reflection-hint');
+    const selectedPanel = document.getElementById('book-reflection-selected');
+    const selectedCopy = document.getElementById('book-reflection-selected-copy');
+
+    const update = () => {
+      const option = selection.options[selection.selectedIndex];
+      const isNew = selection.value === '__new__';
+      newFields.hidden = !isNew;
+      newTitle.required = isNew;
+      newTotal.required = isNew;
+
+      if (isNew) {
+        selectedPanel.hidden = true;
+        hint.textContent = 'Add the book title and total chapters. The chapter you log here becomes its current Library progress.';
+        return;
+      }
+
+      if (selection.value) {
+        const progress = option.dataset.progress || '0';
+        const completion = option.dataset.completion || '';
+        selectedPanel.hidden = false;
+        selectedPanel.classList.remove('empty');
+        selectedCopy.textContent = completion
+          ? `Last chapter completed: ${progress}. Completed: ${completion}%.`
+          : `Last chapter completed: ${progress}.`;
+        hint.textContent = 'This reflection will append to the book page and update its Library progress.';
+        return;
+      }
+
+      selectedPanel.hidden = true;
+      hint.textContent = 'Select an unfinished book from Library, or add a new one.';
+    };
+
+    selection.addEventListener('change', update);
+    update();
+  }());
+</script>

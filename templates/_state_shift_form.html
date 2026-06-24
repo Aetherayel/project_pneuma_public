@@ -1,0 +1,118 @@
+<details class="panel panel-toggle" style="background:var(--panel2); margin-top:12px;">
+  <summary>
+    <div class="panel-toggle-copy panel-title-wrap">
+      <h2>State Shifts</h2>
+    </div>
+    <div class="panel-toggle-meta">
+      <span class="small">open/close</span>
+      <span class="panel-toggle-caret" aria-hidden="true">+</span>
+    </div>
+  </summary>
+
+  <div class="bd">
+    <form class="phase-card" method="post" action="/notion/state-shifts/ui">
+      <input type="hidden" name="return_to" value="{{ return_to|default('/') }}" />
+
+      <h3>Set a Trail Marker</h3>
+
+      <div class="uc-grid">
+        <div>
+          <label>Shift</label>
+          <input type="text" name="shift" placeholder="Named truth after interruption" required />
+        </div>
+        <div>
+          <label>Timestamp</label>
+          <input type="datetime-local" name="timestamp" value="{{ state_shift_timestamp_default }}" required />
+        </div>
+        <div>
+          <label>Intensity</label>
+          <input type="number" name="intensity" min="0" step="1" value="3" required />
+        </div>
+        <div>
+          <label>Trigger</label>
+          <select name="trigger" required>
+            <option value="">Select one</option>
+            {% for option in state_shift_trigger_options %}
+              <option value="{{ option }}">{{ option }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
+          <label>Direction</label>
+          <select name="direction" required>
+            <option value="">Select one</option>
+            {% for option in state_shift_direction_options %}
+              <option value="{{ option }}">{{ option }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
+          <label>Response Chosen</label>
+          <select name="response_chosen" required>
+            <option value="">Select one</option>
+            {% for option in state_shift_response_options %}
+              <option value="{{ option }}">{{ option }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
+          <label>Effect</label>
+          <select name="effect" required>
+            {% for option in state_shift_effect_options %}
+              <option value="{{ option }}" {% if option == "unknown" %}selected{% endif %}>{{ option }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
+          <label>Intent Tested</label>
+          <select name="intent_tested" required>
+            {% for option in state_shift_intent_tested_options %}
+              <option value="{{ option }}" {% if option == "not tested" %}selected{% endif %}>{{ option }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
+          <label>Formation Candidate</label>
+          <select name="formation_candidate" required>
+            {% for option in state_shift_formation_options %}
+              <option value="{{ option }}" {% if option == "no" %}selected{% endif %}>{{ option }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;">
+        <label>Body Cue</label>
+        <div class="choice-grid">
+          {% for option in state_shift_body_cue_options %}
+            <label class="choice">
+              <input type="checkbox" name="body_cue" value="{{ option }}" />
+              <span>{{ option }}</span>
+            </label>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div style="margin-top:12px;">
+        <label>Need</label>
+        <div class="choice-grid">
+          {% for option in state_shift_need_options %}
+            <label class="choice">
+              <input type="checkbox" name="need" value="{{ option }}" />
+              <span>{{ option }}</span>
+            </label>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div style="margin-top:12px;">
+        <label>Note</label>
+        <textarea name="note" placeholder="What changed, what you noticed, and what to learn from it."></textarea>
+      </div>
+
+      <div class="row" style="margin-top:12px;">
+        <button class="btn primary" type="submit">Place Trail Marker</button>
+      </div>
+    </form>
+  </div>
+</details>

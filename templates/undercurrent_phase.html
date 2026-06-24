@@ -1,0 +1,251 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Undercurrent {{ visible_phase|title }}</title>
+
+  <link rel="icon" href="/static/favicon.png" type="image/png">
+  <style>
+    :root{
+      --bg:#070A12;
+      --panel:rgba(255,255,255,.06);
+      --panel2:rgba(255,255,255,.08);
+      --text:#EAF0FF;
+      --muted:rgba(234,240,255,.72);
+      --line:rgba(234,240,255,.12);
+      --accent:#8AE6FF;
+      --ok:#5CFFB0;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 14px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      margin: 0;
+      color: var(--text);
+      background: radial-gradient(1200px 600px at 20% -10%, rgba(138,230,255,.18), transparent 55%),
+                  radial-gradient(900px 500px at 90% 0%, rgba(92,255,176,.10), transparent 55%),
+                  linear-gradient(180deg, #050712, #070A12 35%, #060812);
+      min-height: 100vh;
+    }
+    .wrap { max-width: 920px; margin: 26px auto; padding: 0 18px 40px; }
+    .panel{
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .hd{
+      padding: 14px;
+      border-bottom: 1px solid var(--line);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .bd{ padding: 14px; }
+    .row { display:flex; gap:10px; flex-wrap:wrap; }
+    .msg {
+      margin: 0 0 14px;
+      padding: 12px 14px;
+      border-radius: var(--radius);
+      border: 1px solid rgba(138,230,255,.25);
+      background: rgba(138,230,255,.08);
+    }
+    a.btn, button.btn{
+      display:inline-flex;
+      align-items:center;
+      gap: 10px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.06);
+      text-decoration:none;
+      color: var(--text);
+      font-weight: 650;
+      cursor:pointer;
+    }
+    .btn.primary{
+      border-color: rgba(138,230,255,.35);
+      background: linear-gradient(180deg, rgba(138,230,255,.14), rgba(255,255,255,.06));
+    }
+    .small{
+      font-size:.85rem;
+      color: rgba(234,240,255,.62);
+    }
+    label { display:block; font-size: .9rem; margin-bottom: 8px; color: var(--muted); }
+    input[type=number],
+    select,
+    textarea{
+      width: 100%;
+      padding: 12px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,.25);
+      color: var(--text);
+      outline: none;
+    }
+    input[type=number]:focus,
+    select:focus,
+    textarea:focus{
+      border-color: rgba(138,230,255,.45);
+      box-shadow: 0 0 0 3px rgba(138,230,255,.12);
+    }
+    textarea{ min-height: 110px; resize: vertical; }
+    input[type=range]{
+      width: 100%;
+      accent-color: var(--accent);
+    }
+    .uc-grid{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .phase-card{
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(0,0,0,.16);
+      padding: 14px;
+    }
+    .phase-copy{
+      margin: 0 0 12px;
+      color: rgba(234,240,255,.68);
+      font-size: .9rem;
+    }
+    .slider-field{
+      display:grid;
+      gap: 6px;
+    }
+    .slider-scale{
+      display:flex;
+      justify-content:space-between;
+      font-size:.78rem;
+      color: rgba(234,240,255,.55);
+    }
+    .choice-grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 8px;
+    }
+    .choice{
+      position: relative;
+    }
+    .choice input{
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .choice span{
+      display:flex;
+      align-items:center;
+      min-height: 48px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      color: var(--muted);
+    }
+    .choice input:checked + span{
+      color: var(--text);
+      border-color: rgba(138,230,255,.38);
+      background: rgba(138,230,255,.12);
+    }
+    .phase-status-grid{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .phase-status{
+      display:block;
+      padding: 14px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      color: var(--text);
+      text-decoration:none;
+    }
+    .phase-status.active{
+      border-color: rgba(138,230,255,.4);
+      background: rgba(138,230,255,.1);
+    }
+    .phase-status.done{
+      box-shadow: inset 0 0 0 1px rgba(92,255,176,.18);
+    }
+    .phase-status-top{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:6px;
+    }
+    .phase-state{
+      font-size:.8rem;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,.18);
+      color: rgba(234,240,255,.8);
+    }
+    .phase-state.done{
+      border-color: rgba(92,255,176,.35);
+      background: rgba(92,255,176,.14);
+      color: var(--text);
+    }
+    .phase-window{
+      font-size:.82rem;
+      color: rgba(234,240,255,.64);
+    }
+    .phase-open{
+      margin-top: 10px;
+      font-size:.82rem;
+      color: rgba(138,230,255,.92);
+    }
+    @media (max-width: 840px){
+      .uc-grid{ grid-template-columns: 1fr; }
+      .choice-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .phase-status-grid{ grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    {% if msg %}
+      <div class="msg">{{ msg }}</div>
+    {% endif %}
+
+    <div class="panel">
+      <div class="hd">
+        <div>
+          <h1 style="margin:0; font-size:1.35rem;">Undercurrent {{ visible_phase|title }}</h1>
+          <div class="small">Only the {{ visible_phase }} form is shown here. Time windows follow America/Chicago, including daylight saving time.</div>
+        </div>
+        <div class="row">
+          <a class="btn" href="/">Back to Aurora</a>
+        </div>
+      </div>
+
+      <div class="bd">
+        <div class="phase-status-grid">
+          {% for phase in undercurrent_phases %}
+            <a class="phase-status {% if visible_phase == phase.key %}active{% endif %} {% if undercurrent_done.get(phase.key) %}done{% endif %}" href="{{ phase.ui_path }}">
+              <div class="phase-status-top">
+                <div><strong>{{ phase.label }}</strong></div>
+                <div class="phase-state {% if undercurrent_done.get(phase.key) %}done{% endif %}">
+                  {% if undercurrent_done.get(phase.key) %}Done{% else %}Open{% endif %}
+                </div>
+              </div>
+              <div class="phase-window">{{ phase.window }}</div>
+              <div class="phase-open">Open {{ phase.label|lower }} UI.</div>
+            </a>
+          {% endfor %}
+        </div>
+
+        {% include "_undercurrent_forms.html" %}
+      </div>
+    </div>
+  </div>
+</body>
+</html>

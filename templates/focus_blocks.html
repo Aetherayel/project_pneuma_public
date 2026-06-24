@@ -1,0 +1,1794 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Aurora Focus Blocks</title>
+  <link rel="icon" href="/static/favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="/static/favicon.png">
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Fraunces:opsz,wght@9..144,500;600;700&display=swap");
+
+    :root{
+      --bg:#f4efe6;
+      --ink:#142432;
+      --muted:#5f6d79;
+      --line:rgba(20,36,50,.12);
+      --panel:rgba(255,255,255,.82);
+      --panel-strong:rgba(255,255,255,.94);
+      --shadow:0 18px 44px rgba(26,34,52,.14);
+      --shadow-soft:0 10px 24px rgba(26,34,52,.10);
+      --accent:#b85c38;
+      --accent-2:#2f7a7f;
+      --work:#9b2c4a;
+      --personal:#2f7a7f;
+      --warn:#c38a1a;
+      --ok:#2d7a54;
+      --locked:#6b7280;
+      --radius-xl:28px;
+      --radius-lg:20px;
+      --radius-md:14px;
+      --slot-height:42px;
+    }
+
+    *{ box-sizing:border-box; }
+    html, body{ margin:0; min-height:100%; }
+    body{
+      font-family:"DM Sans", sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(1000px 520px at 0% 0%, rgba(184,92,56,.18), transparent 58%),
+        radial-gradient(900px 480px at 100% 0%, rgba(47,122,127,.16), transparent 58%),
+        linear-gradient(180deg, #f7f2ea 0%, #f0e8dc 42%, #efe7da 100%);
+    }
+
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      background-image:
+        linear-gradient(to right, rgba(20,36,50,.035) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(20,36,50,.03) 1px, transparent 1px);
+      background-size:26px 26px;
+      mask-image:radial-gradient(circle at center, black 48%, transparent 92%);
+      opacity:.55;
+    }
+
+    a{ color:inherit; }
+
+    .shell{
+      max-width:1500px;
+      margin:0 auto;
+      padding:28px 18px 48px;
+      position:relative;
+      z-index:1;
+    }
+
+    .hero{
+      position:relative;
+      overflow:hidden;
+      border:1px solid rgba(20,36,50,.08);
+      border-radius:var(--radius-xl);
+      padding:22px 24px 24px;
+      background:
+        radial-gradient(680px 280px at 100% 0%, rgba(184,92,56,.16), transparent 62%),
+        radial-gradient(620px 260px at 0% 0%, rgba(47,122,127,.18), transparent 58%),
+        linear-gradient(145deg, rgba(255,255,255,.92), rgba(255,248,241,.82));
+      box-shadow:var(--shadow);
+    }
+
+    .hero::after{
+      content:"";
+      position:absolute;
+      inset:auto -10% -24% auto;
+      width:320px;
+      height:320px;
+      border-radius:50%;
+      background:radial-gradient(circle, rgba(20,36,50,.07), transparent 70%);
+      pointer-events:none;
+    }
+
+    .back-link{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      text-decoration:none;
+      color:var(--muted);
+      font-size:.95rem;
+      margin-bottom:18px;
+    }
+
+    .back-link:hover{ color:var(--ink); }
+
+    .hero-grid{
+      display:grid;
+      grid-template-columns:minmax(0, 1.35fr) minmax(300px, .85fr);
+      gap:20px;
+      align-items:end;
+    }
+
+    .eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:7px 12px;
+      border-radius:999px;
+      border:1px solid rgba(20,36,50,.08);
+      background:rgba(255,255,255,.72);
+      color:var(--muted);
+      font-size:.84rem;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+    }
+
+    .eyebrow::before{
+      content:"";
+      width:8px;
+      height:8px;
+      border-radius:50%;
+      background:linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow:0 0 0 5px rgba(184,92,56,.10);
+    }
+
+    .hero h1{
+      margin:16px 0 10px;
+      font-family:"Fraunces", serif;
+      font-size:clamp(2.2rem, 4vw, 4rem);
+      line-height:.98;
+      letter-spacing:-.03em;
+      max-width:10ch;
+    }
+
+    .hero p{
+      margin:0;
+      max-width:64ch;
+      color:var(--muted);
+      font-size:1rem;
+      line-height:1.6;
+    }
+
+    .hero-card{
+      padding:18px;
+      border-radius:22px;
+      border:1px solid rgba(20,36,50,.08);
+      background:rgba(255,255,255,.7);
+      box-shadow:var(--shadow-soft);
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .hero-card-label{
+      font-size:.82rem;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:var(--muted);
+    }
+
+    .hero-card-value{
+      font-family:"Fraunces", serif;
+      font-size:1.45rem;
+      line-height:1.15;
+    }
+
+    .hero-card-copy{
+      color:var(--muted);
+      font-size:.94rem;
+      line-height:1.5;
+    }
+
+    .banner{
+      margin-top:16px;
+      padding:14px 16px;
+      border-radius:18px;
+      border:1px solid rgba(47,122,127,.22);
+      background:rgba(47,122,127,.10);
+      color:var(--ink);
+      box-shadow:var(--shadow-soft);
+    }
+
+    .panel{
+      border:1px solid rgba(20,36,50,.09);
+      border-radius:var(--radius-lg);
+      background:var(--panel);
+      box-shadow:var(--shadow-soft);
+      backdrop-filter:blur(10px);
+    }
+
+    .toolbar{
+      margin-top:18px;
+      padding:16px 18px;
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+    }
+
+    .toolbar-left,
+    .toolbar-right{
+      display:flex;
+      align-items:center;
+      flex-wrap:wrap;
+      gap:12px;
+    }
+
+    .segmented{
+      display:inline-flex;
+      padding:4px;
+      border-radius:999px;
+      border:1px solid rgba(20,36,50,.08);
+      background:rgba(255,255,255,.72);
+      gap:4px;
+    }
+
+    .segment{
+      appearance:none;
+      border:0;
+      border-radius:999px;
+      padding:10px 14px;
+      background:transparent;
+      color:var(--muted);
+      font:inherit;
+      font-weight:600;
+      cursor:pointer;
+      transition:background .18s ease, color .18s ease, transform .18s ease;
+    }
+
+    .segment.active{
+      color:#fff;
+      background:linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow:0 10px 18px rgba(47,122,127,.18);
+    }
+
+    .week-controls{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .mini-btn{
+      appearance:none;
+      border:1px solid rgba(20,36,50,.1);
+      border-radius:999px;
+      padding:10px 14px;
+      background:rgba(255,255,255,.82);
+      color:var(--ink);
+      font:inherit;
+      cursor:pointer;
+      transition:transform .18s ease, border-color .18s ease, background .18s ease;
+    }
+
+    .mini-btn:hover{
+      transform:translateY(-1px);
+      border-color:rgba(20,36,50,.18);
+      background:#fff;
+    }
+
+    .toolbar-summary{
+      color:var(--muted);
+      font-size:.95rem;
+    }
+
+    .layout{
+      margin-top:18px;
+      display:grid;
+      grid-template-columns:320px minmax(0, 1fr) 340px;
+      gap:18px;
+      align-items:start;
+    }
+
+    .panel-head{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      padding:18px 18px 0;
+    }
+
+    .panel-head h2{
+      margin:0;
+      font-family:"Fraunces", serif;
+      font-size:1.35rem;
+      line-height:1.15;
+    }
+
+    .panel-sub{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size:.92rem;
+      line-height:1.45;
+    }
+
+    .count-pill{
+      display:inline-flex;
+      align-items:center;
+      padding:8px 10px;
+      border-radius:999px;
+      background:rgba(20,36,50,.06);
+      color:var(--muted);
+      font-size:.86rem;
+      white-space:nowrap;
+    }
+
+    .node-list{
+      padding:16px 18px 18px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      max-height:calc(100vh - 260px);
+      overflow:auto;
+    }
+
+    .node-card{
+      appearance:none;
+      text-align:left;
+      width:100%;
+      border:1px solid rgba(20,36,50,.08);
+      border-radius:18px;
+      background:rgba(255,255,255,.75);
+      padding:14px;
+      cursor:grab;
+      transition:transform .16s ease, border-color .16s ease, box-shadow .16s ease, background .16s ease;
+    }
+
+    .node-card:hover,
+    .node-card:focus-visible{
+      transform:translateY(-1px);
+      border-color:rgba(20,36,50,.16);
+      box-shadow:0 14px 22px rgba(20,36,50,.08);
+      outline:none;
+    }
+
+    .node-card.selected{
+      border-color:rgba(184,92,56,.45);
+      background:linear-gradient(145deg, rgba(184,92,56,.12), rgba(255,255,255,.86));
+      box-shadow:0 18px 24px rgba(184,92,56,.12);
+    }
+
+    .node-top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+    }
+
+    .node-name{
+      font-weight:700;
+      font-size:1rem;
+      line-height:1.35;
+    }
+
+    .node-engine{
+      margin-top:4px;
+      color:var(--muted);
+      font-size:.9rem;
+    }
+
+    .node-meta{
+      margin-top:12px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+
+    .node-side{
+      display:flex;
+      align-items:flex-start;
+      justify-content:flex-end;
+      gap:10px;
+    }
+
+    .node-accent{
+      width:14px;
+      height:14px;
+      border-radius:999px;
+      border:2px solid rgba(255,255,255,.78);
+      box-shadow:0 0 0 1px rgba(20,36,50,.10);
+      flex:0 0 auto;
+      margin-top:2px;
+    }
+
+    .meta-chip{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(20,36,50,.06);
+      color:var(--muted);
+      font-size:.82rem;
+      white-space:nowrap;
+    }
+
+    .node-domain-work{ color:var(--work); }
+    .node-domain-personal{ color:var(--personal); }
+
+    .empty-state{
+      padding:26px 18px 22px;
+      color:var(--muted);
+      line-height:1.55;
+    }
+
+    .planner-panel{
+      overflow:hidden;
+    }
+
+    .planner-head{
+      padding:18px 18px 14px;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .planner-title{
+      margin:0;
+      font-family:"Fraunces", serif;
+      font-size:1.42rem;
+      line-height:1.15;
+    }
+
+    .planner-copy{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size:.92rem;
+      line-height:1.45;
+    }
+
+    .day-chips{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+
+    .day-chip{
+      appearance:none;
+      border:1px solid rgba(20,36,50,.08);
+      border-radius:999px;
+      padding:8px 12px;
+      background:rgba(255,255,255,.78);
+      color:var(--muted);
+      font:inherit;
+      cursor:pointer;
+    }
+
+    .day-chip.active{
+      color:var(--ink);
+      border-color:rgba(20,36,50,.18);
+      background:#fff;
+      box-shadow:inset 0 0 0 1px rgba(20,36,50,.03);
+    }
+
+    .calendar-scroller{
+      overflow:auto;
+      padding:0 18px 18px;
+    }
+
+    .planner-grid{
+      display:grid;
+      grid-template-columns:78px repeat(7, minmax(150px, 1fr));
+      min-width:1120px;
+      gap:10px;
+      align-items:start;
+    }
+
+    .planner-grid.compact{
+      grid-template-columns:78px minmax(260px, 1fr);
+      min-width:0;
+    }
+
+    .time-rail,
+    .day-column{
+      position:relative;
+    }
+
+    .day-column{
+      border:1px solid rgba(20,36,50,.08);
+      border-radius:18px;
+      background:rgba(255,255,255,.76);
+      overflow:hidden;
+      min-height:200px;
+    }
+
+    .day-header{
+      padding:12px 14px 10px;
+      border-bottom:1px solid rgba(20,36,50,.06);
+      background:rgba(255,255,255,.78);
+      position:sticky;
+      top:0;
+      z-index:2;
+    }
+
+    .day-name{
+      font-weight:700;
+      font-size:.96rem;
+    }
+
+    .day-sub{
+      margin-top:4px;
+      color:var(--muted);
+      font-size:.82rem;
+    }
+
+    .time-label,
+    .planner-slot{
+      height:var(--slot-height);
+    }
+
+    .time-label{
+      padding-top:6px;
+      text-align:right;
+      padding-right:10px;
+      color:var(--muted);
+      font-size:.8rem;
+    }
+
+    .time-label.half{
+      opacity:.46;
+    }
+
+    .slot-stack{
+      position:relative;
+      min-height:calc(var(--slot-height) * 32);
+      background:
+        linear-gradient(180deg, rgba(20,36,50,.03), rgba(20,36,50,.01));
+    }
+
+    .planner-slot{
+      border-top:1px solid rgba(20,36,50,.06);
+      cursor:pointer;
+      transition:background .14s ease;
+    }
+
+    .planner-slot:hover,
+    .planner-slot.drop-target{
+      background:rgba(184,92,56,.08);
+    }
+
+    .entry-layer{
+      position:absolute;
+      inset:0 6px 0 6px;
+      pointer-events:none;
+    }
+
+    .entry-block{
+      position:absolute;
+      left:0;
+      right:0;
+      border:1px solid var(--entry-border, rgba(20,36,50,.16));
+      border-radius:16px;
+      padding:10px 12px;
+      text-align:left;
+      color:var(--entry-fg, #fff);
+      cursor:pointer;
+      pointer-events:auto;
+      box-shadow:0 14px 20px rgba(20,36,50,.14);
+      transition:transform .14s ease, box-shadow .14s ease, opacity .14s ease;
+      overflow:hidden;
+      background:linear-gradient(160deg, var(--entry-bg, #475569), var(--entry-bg-alt, #334155));
+      opacity:var(--entry-opacity, .82);
+    }
+
+    .entry-block:hover,
+    .entry-block:focus-visible{
+      transform:translateY(-1px);
+      box-shadow:0 18px 24px rgba(20,36,50,.18);
+      outline:none;
+    }
+
+    .entry-block.readonly{
+      filter:saturate(.84);
+    }
+
+    .entry-block.draft{
+      border:2px dashed rgba(20,36,50,.18);
+    }
+
+    .entry-head{
+      display:flex;
+      align-items:flex-start;
+      gap:8px;
+    }
+
+    .entry-title{
+      font-weight:700;
+      font-size:.92rem;
+      line-height:1.25;
+      flex:1 1 auto;
+      min-width:0;
+    }
+
+    .entry-node-pill{
+      display:inline-flex;
+      align-items:center;
+      max-width:45%;
+      padding:2px 8px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.18);
+      background:rgba(255,255,255,.14);
+      backdrop-filter:blur(6px);
+      font-size:.66rem;
+      font-weight:600;
+      line-height:1.2;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      flex:0 1 auto;
+    }
+
+    .entry-meta{
+      margin-top:7px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      font-size:.76rem;
+      opacity:.92;
+    }
+
+    .entry-pill{
+      display:inline-flex;
+      align-items:center;
+      padding:4px 8px;
+      border-radius:999px;
+      background:rgba(255,255,255,.18);
+      backdrop-filter:blur(6px);
+    }
+
+    .editor-panel{
+      padding-bottom:16px;
+      position:sticky;
+      top:18px;
+    }
+
+    .editor-body{
+      padding:16px 18px 18px;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+
+    .editor-state{
+      padding:16px;
+      border-radius:18px;
+      border:1px dashed rgba(20,36,50,.14);
+      background:rgba(255,255,255,.62);
+      color:var(--muted);
+      line-height:1.55;
+    }
+
+    .editor-callout{
+      padding:12px 14px;
+      border-radius:16px;
+      background:rgba(20,36,50,.05);
+      color:var(--muted);
+      font-size:.9rem;
+      line-height:1.5;
+    }
+
+    .editor-group{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .editor-row{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:12px;
+    }
+
+    label{
+      display:block;
+      color:var(--muted);
+      font-size:.86rem;
+      margin-bottom:7px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="datetime-local"],
+    select{
+      width:100%;
+      border:1px solid rgba(20,36,50,.12);
+      border-radius:14px;
+      padding:12px 13px;
+      background:rgba(255,255,255,.9);
+      color:var(--ink);
+      font:inherit;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.7);
+    }
+
+    input:focus,
+    select:focus{
+      outline:none;
+      border-color:rgba(184,92,56,.44);
+      box-shadow:0 0 0 4px rgba(184,92,56,.10);
+    }
+
+    .presence-grid{
+      display:grid;
+      grid-template-columns:repeat(5, minmax(0, 1fr));
+      gap:8px;
+    }
+
+    .presence-btn{
+      appearance:none;
+      border:1px solid rgba(20,36,50,.10);
+      border-radius:14px;
+      padding:11px 8px;
+      background:rgba(255,255,255,.8);
+      color:var(--muted);
+      font:inherit;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    .presence-btn.active{
+      color:#fff;
+      border-color:transparent;
+      background:linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow:0 10px 18px rgba(47,122,127,.18);
+    }
+
+    .editor-summary{
+      border:1px solid rgba(20,36,50,.08);
+      border-radius:18px;
+      background:rgba(255,255,255,.82);
+      padding:14px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .summary-top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+    }
+
+    .summary-title{
+      font-weight:700;
+      font-size:1rem;
+      line-height:1.3;
+    }
+
+    .summary-sub{
+      color:var(--muted);
+      font-size:.9rem;
+      line-height:1.45;
+    }
+
+    .advanced{
+      border:1px solid rgba(20,36,50,.08);
+      border-radius:16px;
+      background:rgba(255,255,255,.68);
+      overflow:hidden;
+    }
+
+    .advanced > summary{
+      cursor:pointer;
+      list-style:none;
+      padding:12px 14px;
+      font-weight:600;
+      color:var(--muted);
+    }
+
+    .advanced > summary::-webkit-details-marker{ display:none; }
+
+    .advanced-body{
+      padding:0 14px 14px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .editor-actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+
+    .action-btn{
+      appearance:none;
+      border:1px solid rgba(20,36,50,.1);
+      border-radius:999px;
+      padding:11px 16px;
+      background:rgba(255,255,255,.84);
+      color:var(--ink);
+      font:inherit;
+      font-weight:600;
+      cursor:pointer;
+    }
+
+    .action-btn.primary{
+      border-color:transparent;
+      color:#fff;
+      background:linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow:0 14px 24px rgba(47,122,127,.18);
+    }
+
+    .action-btn:disabled{
+      opacity:.56;
+      cursor:not-allowed;
+      box-shadow:none;
+    }
+
+    .status{
+      min-height:24px;
+      color:var(--muted);
+      font-size:.9rem;
+    }
+
+    .status.good{ color:var(--ok); }
+    .status.bad{ color:var(--work); }
+
+    @media (max-width: 1180px){
+      .layout{
+        grid-template-columns:300px minmax(0, 1fr);
+      }
+
+      .editor-panel{
+        grid-column:1 / -1;
+        position:static;
+      }
+    }
+
+    @media (max-width: 960px){
+      .hero-grid,
+      .layout{
+        grid-template-columns:1fr;
+      }
+
+      .planner-grid{
+        min-width:0;
+      }
+
+      .node-list{
+        max-height:none;
+      }
+
+      .editor-row{
+        grid-template-columns:1fr;
+      }
+
+      .presence-grid{
+        grid-template-columns:repeat(5, minmax(52px, 1fr));
+      }
+    }
+
+    @media (max-width: 640px){
+      .shell{
+        padding:18px 12px 30px;
+      }
+
+      .hero,
+      .toolbar{
+        border-radius:22px;
+      }
+
+      .toolbar{
+        padding:14px;
+      }
+
+      .panel-head,
+      .planner-head,
+      .editor-body,
+      .node-list,
+      .calendar-scroller{
+        padding-left:14px;
+        padding-right:14px;
+      }
+
+      .hero h1{
+        max-width:none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="hero">
+      <a class="back-link" href="/">&#8592; Back to Aurora</a>
+      <div class="hero-grid">
+        <div>
+          <div class="eyebrow">Focus Block Planner</div>
+          <h1>Place the right node into the right hour.</h1>
+          <p>Drag an Arc Node into the calendar, or on mobile tap a node and then tap a slot. Aurora fills the Arc Node, mode, and Resonance day for you, so the finishing move is just naming the signal and rating presence.</p>
+        </div>
+        <div class="hero-card">
+          <div class="hero-card-label">Current Sweep</div>
+          <div class="hero-card-value" id="week-label">{{ focus_blocks_week_label }}</div>
+          <div class="hero-card-copy">Default blocks begin at 90 minutes, but duration stays editable after you place one. Existing rite, book, and echoform entries show up as locked so the planner does not trample other workflows.</div>
+        </div>
+      </div>
+    </section>
+
+    {% if msg %}
+      <div class="banner">{{ msg }}</div>
+    {% endif %}
+
+    <section class="toolbar panel">
+      <div class="toolbar-left">
+        <div class="segmented" id="domain-toggle" aria-label="Focus domain">
+          <button class="segment" type="button" data-domain="work">Work</button>
+          <button class="segment" type="button" data-domain="personal">Personal</button>
+        </div>
+        <div class="week-controls">
+          <button class="mini-btn" type="button" id="week-prev">&#8592; Prev week</button>
+          <button class="mini-btn" type="button" id="week-today">This week</button>
+          <button class="mini-btn" type="button" id="week-next">Next week &#8594;</button>
+        </div>
+      </div>
+      <div class="toolbar-right">
+        <div class="toolbar-summary" id="toolbar-summary">Loading planner context...</div>
+      </div>
+    </section>
+
+    <div class="layout">
+      <aside class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>Arc Nodes</h2>
+            <div class="panel-sub">Active nodes only. Drag on desktop, or tap one first on mobile.</div>
+          </div>
+          <div class="count-pill" id="node-count">0 live</div>
+        </div>
+        <div class="node-list" id="node-list"></div>
+      </aside>
+
+      <main class="panel planner-panel">
+        <div class="planner-head">
+          <div>
+            <h2 class="planner-title">Week Grid</h2>
+            <div class="planner-copy" id="planner-copy">Choose a domain, then drop a node into the hour you want to protect.</div>
+          </div>
+          <div class="day-chips" id="day-chips"></div>
+        </div>
+        <div class="calendar-scroller">
+          <div class="planner-grid" id="planner-grid"></div>
+        </div>
+      </main>
+
+      <aside class="panel editor-panel">
+        <div class="panel-head">
+          <div>
+            <h2>Signal Editor</h2>
+            <div class="panel-sub">Node context preloads here after you place a block.</div>
+          </div>
+        </div>
+        <div class="editor-body">
+          <div class="status" id="editor-status"></div>
+          <div id="editor-shell"></div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    const initialPayload = {{ focus_blocks_payload_json | safe }};
+
+    const state = {
+      payload: initialPayload,
+      domain: initialPayload.domain,
+      weekStart: initialPayload.week_start,
+      selectedDayIso: initialPayload.selected_day_iso,
+      selectedNodeId: null,
+      draft: null,
+      saving: false,
+      message: "",
+      messageTone: "info",
+    };
+
+    const slotHeight = 42;
+    const root = document.documentElement;
+    root.style.setProperty("--slot-height", `${slotHeight}px`);
+
+    const els = {
+      domainToggle: document.getElementById("domain-toggle"),
+      weekPrev: document.getElementById("week-prev"),
+      weekToday: document.getElementById("week-today"),
+      weekNext: document.getElementById("week-next"),
+      toolbarSummary: document.getElementById("toolbar-summary"),
+      weekLabel: document.getElementById("week-label"),
+      nodeCount: document.getElementById("node-count"),
+      nodeList: document.getElementById("node-list"),
+      plannerCopy: document.getElementById("planner-copy"),
+      dayChips: document.getElementById("day-chips"),
+      plannerGrid: document.getElementById("planner-grid"),
+      editorShell: document.getElementById("editor-shell"),
+      editorStatus: document.getElementById("editor-status"),
+    };
+
+    const compactQuery = window.matchMedia("(max-width: 960px)");
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function toDateOnly(isoDate) {
+      const date = new Date(`${isoDate}T12:00:00`);
+      const year = date.getFullYear();
+      const month = `${date.getMonth() + 1}`.padStart(2, "0");
+      const day = `${date.getDate()}`.padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+
+    function addDays(isoDate, amount) {
+      const date = new Date(`${isoDate}T12:00:00`);
+      date.setDate(date.getDate() + amount);
+      return toDateOnly(date.toISOString().slice(0, 10));
+    }
+
+    function weekStartForDate(isoDate) {
+      const date = new Date(`${isoDate}T12:00:00`);
+      const day = date.getDay();
+      const offset = day === 0 ? -6 : 1 - day;
+      date.setDate(date.getDate() + offset);
+      return toDateOnly(date.toISOString().slice(0, 10));
+    }
+
+    function toLocalInputValue(value) {
+      const date = value instanceof Date ? value : new Date(value);
+      if (Number.isNaN(date.getTime())) {
+        return "";
+      }
+      const year = date.getFullYear();
+      const month = `${date.getMonth() + 1}`.padStart(2, "0");
+      const day = `${date.getDate()}`.padStart(2, "0");
+      const hour = `${date.getHours()}`.padStart(2, "0");
+      const minute = `${date.getMinutes()}`.padStart(2, "0");
+      return `${year}-${month}-${day}T${hour}:${minute}`;
+    }
+
+    function addMinutesToLocalInput(value, minutes) {
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) {
+        return value;
+      }
+      date.setMinutes(date.getMinutes() + Number(minutes || 0));
+      return toLocalInputValue(date);
+    }
+
+    function localInputToDate(value) {
+      const date = new Date(value);
+      return Number.isNaN(date.getTime()) ? null : date;
+    }
+
+    function durationMinutes(startLocal, durationMinutes) {
+      const safe = Number(durationMinutes || 0);
+      if (!Number.isFinite(safe) || safe <= 0) {
+        return state.payload.default_duration_minutes;
+      }
+      return safe;
+    }
+
+    function entryDurationMinutes(entry) {
+      const start = new Date(entry.start);
+      const end = new Date(entry.end);
+      if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+        return state.payload.default_duration_minutes;
+      }
+      return Math.max(Math.round((end.getTime() - start.getTime()) / 60000), 30);
+    }
+
+    function currentDays() {
+      return state.payload.days || [];
+    }
+
+    function visibleDays() {
+      if (!compactQuery.matches) {
+        return currentDays();
+      }
+      return currentDays().filter((day) => day.iso === state.selectedDayIso);
+    }
+
+    function activeDomainLabel() {
+      return state.domain === "work" ? "work" : "personal";
+    }
+
+    function activeDomainTitle() {
+      return state.domain === "work" ? "Work" : "Personal";
+    }
+
+    function visibleNodes() {
+      return (state.payload.nodes || []).filter((node) => {
+        if (node.status === "Done") {
+          return false;
+        }
+        return focusDomainClass(node.domain) === state.domain;
+      });
+    }
+
+    function findNode(nodeId) {
+      return (state.payload.nodes || []).find((node) => node.page_id === nodeId) || null;
+    }
+
+    function findEntry(pageId) {
+      return (state.payload.entries || []).find((entry) => entry.page_id === pageId) || null;
+    }
+
+    function focusDomainClass(domain) {
+      const key = (domain || "").toLowerCase();
+      if (key === "work") {
+        return "work";
+      }
+      if (key === "personal") {
+        return "personal";
+      }
+      return "unknown";
+    }
+
+    function setStatusMessage(message, tone = "info") {
+      state.message = message || "";
+      state.messageTone = tone;
+      renderStatus();
+    }
+
+    function renderStatus() {
+      els.editorStatus.textContent = state.message;
+      els.editorStatus.className = `status ${state.messageTone === "error" ? "bad" : state.messageTone === "success" ? "good" : ""}`;
+    }
+
+    function setSelectedNode(nodeId) {
+      state.selectedNodeId = nodeId;
+      renderNodeList();
+      if (!state.draft) {
+        setStatusMessage("Node selected. Tap a slot to place the block.", "info");
+      }
+    }
+
+    function buildDraftFromNode(node, startLocal) {
+      return {
+        page_id: null,
+        arc_node_id: node.page_id,
+        arc_node_name: node.name,
+        engine: node.engine,
+        domain: node.domain,
+        signal: "",
+        mode: node.suggested_mode,
+        presence: node.last_presence || state.payload.default_presence,
+        startLocal,
+        durationMinutes: state.payload.default_duration_minutes,
+        tile_background: node.tile_background,
+        tile_background_alt: node.tile_background_alt,
+        tile_border_color: node.tile_border_color,
+        tile_text_color: node.tile_text_color,
+        editable: true,
+        entryKind: "focus",
+      };
+    }
+
+    function buildDraftFromEntry(entry) {
+      return {
+        page_id: entry.page_id,
+        arc_node_id: entry.arc_node_id,
+        arc_node_name: entry.arc_node_name,
+        engine: entry.engine,
+        domain: entry.domain,
+        signal: entry.signal || "",
+        mode: entry.mode || findNode(entry.arc_node_id)?.suggested_mode || "Creation",
+        presence: entry.presence || state.payload.default_presence,
+        startLocal: toLocalInputValue(entry.start),
+        durationMinutes: entryDurationMinutes(entry),
+        tile_background: entry.tile_background,
+        tile_background_alt: entry.tile_background_alt,
+        tile_border_color: entry.tile_border_color,
+        tile_text_color: entry.tile_text_color,
+        editable: Boolean(entry.editable),
+        entryKind: entry.entry_kind || "focus",
+      };
+    }
+
+    function placeDraft(nodeId, startLocal) {
+      const node = findNode(nodeId);
+      if (!node) {
+        setStatusMessage("That Arc Node is no longer available in this view.", "error");
+        return;
+      }
+      state.selectedNodeId = nodeId;
+      state.draft = buildDraftFromNode(node, startLocal);
+      renderAll();
+      setStatusMessage("Block placed. Finish the signal name and presence, then save.", "info");
+    }
+
+    function selectExistingEntry(pageId) {
+      const entry = findEntry(pageId);
+      if (!entry) {
+        return;
+      }
+      state.selectedNodeId = entry.arc_node_id;
+      state.draft = buildDraftFromEntry(entry);
+      renderAll();
+      if (entry.editable) {
+        setStatusMessage("Existing focus block loaded for editing.", "info");
+      } else {
+        setStatusMessage("This entry is shown for context only and stays locked here.", "info");
+      }
+    }
+
+    function resetDraft() {
+      state.draft = null;
+      renderAll();
+      setStatusMessage("", "info");
+    }
+
+    function syncDraftFromForm() {
+      if (!state.draft) {
+        return;
+      }
+      const signalInput = document.getElementById("focus-signal-name");
+      const startInput = document.getElementById("focus-start");
+      const durationInput = document.getElementById("focus-duration");
+      const modeInput = document.getElementById("focus-mode");
+      if (signalInput) {
+        state.draft.signal = signalInput.value;
+      }
+      if (startInput && startInput.value) {
+        state.draft.startLocal = startInput.value;
+      }
+      if (durationInput && durationInput.value) {
+        state.draft.durationMinutes = durationMinutes(state.draft.startLocal, durationInput.value);
+      }
+      if (modeInput && modeInput.value) {
+        state.draft.mode = modeInput.value;
+      }
+    }
+
+    function setPresence(value) {
+      if (!state.draft) {
+        return;
+      }
+      state.draft.presence = Number(value);
+      renderEditor();
+      renderPlanner();
+    }
+
+    function renderToolbar() {
+      const nodes = visibleNodes();
+      const entries = state.payload.entries || [];
+      els.toolbarSummary.textContent = `${nodes.length} active ${activeDomainLabel()} nodes, ${entries.length} Signal Field items on the shared week.`;
+      const days = currentDays();
+      if (days.length) {
+        els.weekLabel.textContent = `${days[0].label_short} - ${days[days.length - 1].label_short}`;
+      }
+
+      Array.from(els.domainToggle.querySelectorAll(".segment")).forEach((button) => {
+        button.classList.toggle("active", button.dataset.domain === state.domain);
+      });
+    }
+
+    function renderNodeList() {
+      const nodes = visibleNodes();
+      els.nodeCount.textContent = `${nodes.length} live`;
+      if (!nodes.length) {
+        els.nodeList.innerHTML = `<div class="empty-state">No active ${escapeHtml(activeDomainLabel())} nodes are available right now.</div>`;
+        return;
+      }
+
+      els.nodeList.innerHTML = nodes.map((node) => {
+        const selected = state.selectedNodeId === node.page_id ? "selected" : "";
+        const domainClass = `node-domain-${(node.domain || "").toLowerCase()}`;
+        return `
+          <button
+            class="node-card ${selected}"
+            type="button"
+            draggable="true"
+            data-node-id="${escapeHtml(node.page_id)}"
+          >
+            <div class="node-top">
+              <div>
+                <div class="node-name">${escapeHtml(node.name)}</div>
+                <div class="node-engine">${escapeHtml(node.engine || "Unassigned engine")}</div>
+              </div>
+              <div class="node-side">
+                <div class="meta-chip ${domainClass}">${escapeHtml(node.domain || "Unknown")}</div>
+                <span
+                  class="node-accent"
+                  style="background:${escapeHtml(node.tile_background || "#475569")};"
+                  aria-hidden="true"
+                ></span>
+              </div>
+            </div>
+            <div class="node-meta">
+              <span class="meta-chip">${escapeHtml(node.status || "Open")}</span>
+              <span class="meta-chip">${escapeHtml(node.suggested_mode || "Creation")}</span>
+              ${node.line ? `<span class="meta-chip">${escapeHtml(node.line)}</span>` : ""}
+              ${node.last_signal_title ? `<span class="meta-chip">Last: ${escapeHtml(node.last_signal_title)}</span>` : ""}
+            </div>
+          </button>
+        `;
+      }).join("");
+
+      els.nodeList.querySelectorAll(".node-card").forEach((button) => {
+        button.addEventListener("click", () => {
+          setSelectedNode(button.dataset.nodeId);
+        });
+        button.addEventListener("dragstart", (event) => {
+          event.dataTransfer.setData("text/plain", button.dataset.nodeId);
+          event.dataTransfer.effectAllowed = "copy";
+          setSelectedNode(button.dataset.nodeId);
+        });
+      });
+    }
+
+    function renderDayChips() {
+      els.dayChips.innerHTML = currentDays().map((day) => `
+        <button class="day-chip ${state.selectedDayIso === day.iso ? "active" : ""}" type="button" data-day="${escapeHtml(day.iso)}">
+          ${escapeHtml(day.label_short)}
+        </button>
+      `).join("");
+
+      els.dayChips.querySelectorAll(".day-chip").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.selectedDayIso = button.dataset.day;
+          renderDayChips();
+          renderPlanner();
+          renderEditor();
+        });
+      });
+    }
+
+    function blockPosition(startValue, endValue) {
+      const start = startValue instanceof Date ? startValue : new Date(startValue);
+      const end = endValue instanceof Date ? endValue : new Date(endValue);
+      if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+        return { top: 0, height: slotHeight };
+      }
+      const dayStartMinutes = state.payload.day_start_hour * 60;
+      const dayEndMinutes = state.payload.day_end_hour * 60;
+      const rawStart = (start.getHours() * 60) + start.getMinutes();
+      const rawEnd = (end.getHours() * 60) + end.getMinutes();
+      const clampedStart = Math.max(dayStartMinutes, Math.min(rawStart, dayEndMinutes - 15));
+      const clampedEnd = Math.max(clampedStart + 15, Math.min(rawEnd, dayEndMinutes));
+      const top = ((clampedStart - dayStartMinutes) / state.payload.slot_minutes) * slotHeight + 4;
+      const height = Math.max(((clampedEnd - clampedStart) / state.payload.slot_minutes) * slotHeight - 8, 30);
+      return { top, height };
+    }
+
+    function formatTimeRange(startValue, endValue) {
+      const options = { hour: "numeric", minute: "2-digit" };
+      const start = startValue instanceof Date ? startValue : new Date(startValue);
+      const end = endValue instanceof Date ? endValue : new Date(endValue);
+      if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+        return "Time unclear";
+      }
+      return `${start.toLocaleTimeString([], options)} - ${end.toLocaleTimeString([], options)}`;
+    }
+
+    function entryBlockStyle(entry) {
+      const background = entry.tile_background || "#475569";
+      const backgroundAlt = entry.tile_background_alt || "#334155";
+      const border = entry.tile_border_color || "#1e293b";
+      const text = entry.tile_text_color || "#f8fafc";
+      const presence = Number(entry.presence);
+      const clampedPresence = Number.isFinite(presence) ? Math.max(1, Math.min(presence, 5)) : 3;
+      const opacity = 0.4 + ((clampedPresence - 1) * 0.15);
+      return `--entry-bg:${background}; --entry-bg-alt:${backgroundAlt}; --entry-border:${border}; --entry-fg:${text}; --entry-opacity:${opacity.toFixed(2)};`;
+    }
+
+    function renderEntryBlock(entry, extraClass = "") {
+      const start = new Date(entry.start);
+      const end = new Date(entry.end);
+      const position = blockPosition(start, end);
+      const toneClass = entry.editable ? "" : "readonly";
+      const title = entry.signal || entry.arc_node_name || "Untitled signal";
+      const arcNodeName = entry.arc_node_name || "";
+      const showNodePill = Boolean(arcNodeName) && arcNodeName !== title;
+      const badges = [];
+      if (!entry.editable) {
+        badges.push(`<span class="entry-pill">Locked</span>`);
+      }
+      return `
+        <button
+          class="entry-block ${toneClass} ${extraClass}"
+          type="button"
+          data-entry-id="${escapeHtml(entry.page_id || "")}"
+          style="top:${position.top}px; height:${position.height}px; ${entryBlockStyle(entry)}"
+        >
+          <div class="entry-head">
+            <div class="entry-title">${escapeHtml(title)}</div>
+            ${showNodePill ? `<span class="entry-node-pill">${escapeHtml(arcNodeName)}</span>` : ""}
+          </div>
+          ${badges.length ? `<div class="entry-meta">${badges.join("")}</div>` : ""}
+        </button>
+      `;
+    }
+
+    function renderPlanner() {
+      const days = visibleDays();
+      const slotMinutes = state.payload.slot_minutes;
+      const totalSlots = ((state.payload.day_end_hour - state.payload.day_start_hour) * 60) / slotMinutes;
+      const compact = compactQuery.matches;
+      els.plannerGrid.classList.toggle("compact", compact);
+
+      const timeRail = [
+        `<div class="time-rail">`,
+      ];
+      for (let slotIndex = 0; slotIndex < totalSlots; slotIndex += 1) {
+        const minutes = (state.payload.day_start_hour * 60) + (slotIndex * slotMinutes);
+        const hours = Math.floor(minutes / 60);
+        const mins = minutes % 60;
+        const date = new Date();
+        date.setHours(hours, mins, 0, 0);
+        const label = date.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+        timeRail.push(`<div class="time-label ${mins === 30 ? "half" : ""}">${escapeHtml(label)}</div>`);
+      }
+      timeRail.push(`</div>`);
+
+      const dayColumns = days.map((day) => {
+        const entries = (state.payload.entries || []).filter((entry) => {
+          return toDateOnly(entry.start.slice(0, 10)) === day.iso;
+        });
+        const slots = [];
+        for (let slotIndex = 0; slotIndex < totalSlots; slotIndex += 1) {
+          const slotHour = state.payload.day_start_hour + Math.floor((slotIndex * slotMinutes) / 60);
+          const slotMinute = (slotIndex * slotMinutes) % 60;
+          const slotStart = `${day.iso}T${String(slotHour).padStart(2, "0")}:${String(slotMinute).padStart(2, "0")}`;
+          slots.push(`<div class="planner-slot" data-start="${slotStart}"></div>`);
+        }
+
+        const draftEntry = (state.draft && state.draft.startLocal && day.iso === state.draft.startLocal.slice(0, 10))
+          ? {
+              page_id: state.draft.page_id || "draft",
+              signal: state.draft.signal || findNode(state.draft.arc_node_id)?.name || "New focus block",
+              mode: state.draft.mode,
+              presence: state.draft.presence,
+              domain: state.draft.domain || findNode(state.draft.arc_node_id)?.domain || activeDomainTitle(),
+              tile_background: state.draft.tile_background || findNode(state.draft.arc_node_id)?.tile_background,
+              tile_background_alt: state.draft.tile_background_alt || findNode(state.draft.arc_node_id)?.tile_background_alt,
+              tile_border_color: state.draft.tile_border_color || findNode(state.draft.arc_node_id)?.tile_border_color,
+              tile_text_color: state.draft.tile_text_color || findNode(state.draft.arc_node_id)?.tile_text_color,
+              start: state.draft.startLocal,
+              end: addMinutesToLocalInput(state.draft.startLocal, state.draft.durationMinutes),
+              editable: true,
+            }
+          : null;
+
+        return `
+          <section class="day-column" data-day="${escapeHtml(day.iso)}">
+            <div class="day-header">
+              <div class="day-name">${escapeHtml(day.label_long)}</div>
+              <div class="day-sub">${entries.length} logged${draftEntry ? " + draft" : ""}</div>
+            </div>
+            <div class="slot-stack">
+              ${slots.join("")}
+              <div class="entry-layer">
+                ${entries.map((entry) => renderEntryBlock(entry)).join("")}
+                ${draftEntry ? renderEntryBlock(draftEntry, "draft") : ""}
+              </div>
+            </div>
+          </section>
+        `;
+      }).join("");
+
+      els.plannerGrid.innerHTML = `${timeRail.join("")}${dayColumns}`;
+
+      const timeRailEl = els.plannerGrid.querySelector(".time-rail");
+      const firstDayHeader = els.plannerGrid.querySelector(".day-header");
+      if (timeRailEl) {
+        timeRailEl.style.paddingTop = firstDayHeader ? `${firstDayHeader.offsetHeight}px` : "0px";
+      }
+
+      els.plannerGrid.querySelectorAll(".planner-slot").forEach((slot) => {
+        slot.addEventListener("click", () => {
+          if (!state.selectedNodeId) {
+            setStatusMessage("Select an Arc Node first, then tap a slot to place it.", "info");
+            return;
+          }
+          placeDraft(state.selectedNodeId, slot.dataset.start);
+        });
+        slot.addEventListener("dragover", (event) => {
+          event.preventDefault();
+          slot.classList.add("drop-target");
+        });
+        slot.addEventListener("dragleave", () => {
+          slot.classList.remove("drop-target");
+        });
+        slot.addEventListener("drop", (event) => {
+          event.preventDefault();
+          slot.classList.remove("drop-target");
+          const nodeId = event.dataTransfer.getData("text/plain");
+          if (!nodeId) {
+            return;
+          }
+          placeDraft(nodeId, slot.dataset.start);
+        });
+      });
+
+      els.plannerGrid.querySelectorAll(".entry-block[data-entry-id]").forEach((button) => {
+        const pageId = button.dataset.entryId;
+        if (!pageId || pageId === "draft") {
+          return;
+        }
+        button.addEventListener("click", () => {
+          selectExistingEntry(pageId);
+        });
+      });
+
+      els.plannerCopy.textContent = compact
+        ? "Mobile mode keeps one day open at a time. The node tray switches between work and personal, but the calendar stays shared."
+        : "Switch the node tray between work and personal. The calendar stays shared, and any Signal Field items already logged still show up here.";
+    }
+
+    function renderEditor() {
+      if (!state.draft) {
+        els.editorShell.innerHTML = `
+          <div class="editor-state">
+            Select a node from the left and place it onto the calendar. Once it lands, Aurora will preload the Arc Node relation, suggested mode, and default duration here.
+          </div>
+        `;
+        return;
+      }
+
+      const node = findNode(state.draft.arc_node_id);
+      const endLocal = addMinutesToLocalInput(state.draft.startLocal, state.draft.durationMinutes);
+      const endDate = localInputToDate(endLocal);
+      const summaryTime = endDate
+        ? formatTimeRange(localInputToDate(state.draft.startLocal), endDate)
+        : "Time unclear";
+      const readOnly = !state.draft.editable;
+
+      els.editorShell.innerHTML = `
+        <div class="editor-summary">
+          <div class="summary-top">
+            <div>
+              <div class="summary-title">${escapeHtml(node?.name || state.draft.arc_node_name || "Signal Field Entry")}</div>
+              <div class="summary-sub">${escapeHtml(node?.engine || state.draft.engine || "Unassigned engine")} · ${escapeHtml(node?.domain || state.draft.domain || activeDomainTitle())}</div>
+            </div>
+            <div class="meta-chip">${escapeHtml(state.draft.mode || "Mode unset")}</div>
+          </div>
+          <div class="summary-sub">${escapeHtml(summaryTime)}</div>
+        </div>
+
+        ${readOnly ? `
+          <div class="editor-callout">
+            This block was created by another Aurora workflow, so it stays visible for context but locked for editing here.
+          </div>
+        ` : ""}
+
+        <div class="editor-group">
+          <div>
+            <label for="focus-signal-name">Signal Name</label>
+            <input id="focus-signal-name" type="text" maxlength="200" value="${escapeHtml(state.draft.signal || "")}" placeholder="${escapeHtml(node?.last_signal_title || node?.name || "Name this block")}" ${readOnly ? "disabled" : ""} />
+          </div>
+        </div>
+
+        <div class="editor-group">
+          <label>Presence</label>
+          <div class="presence-grid">
+            ${[1, 2, 3, 4, 5].map((value) => `
+              <button class="presence-btn ${Number(state.draft.presence) === value ? "active" : ""}" type="button" data-presence="${value}" ${readOnly ? "disabled" : ""}>${value}</button>
+            `).join("")}
+          </div>
+        </div>
+
+        <div class="editor-row">
+          <div class="editor-group">
+            <div>
+              <label for="focus-start">Start</label>
+              <input id="focus-start" type="datetime-local" value="${escapeHtml(state.draft.startLocal)}" ${readOnly ? "disabled" : ""} />
+            </div>
+          </div>
+          <div class="editor-group">
+            <div>
+              <label for="focus-duration">Duration Minutes</label>
+              <input id="focus-duration" type="number" min="5" step="5" value="${escapeHtml(state.draft.durationMinutes)}" ${readOnly ? "disabled" : ""} />
+            </div>
+          </div>
+        </div>
+
+        <details class="advanced">
+          <summary>Advanced</summary>
+          <div class="advanced-body">
+            <div class="editor-group">
+              <div>
+                <label for="focus-mode">Mode</label>
+                <select id="focus-mode" ${readOnly ? "disabled" : ""}>
+                  ${state.payload.mode_options.map((mode) => `
+                    <option value="${escapeHtml(mode)}" ${state.draft.mode === mode ? "selected" : ""}>${escapeHtml(mode)}</option>
+                  `).join("")}
+                </select>
+              </div>
+            </div>
+            <div class="editor-callout">
+              Arc Node and Resonance day are auto-populated from the selected node and start date. Suggested mode comes from this node's recent Signal Field history when possible.
+            </div>
+          </div>
+        </details>
+
+        <div class="editor-actions">
+          <button class="action-btn primary" type="button" id="focus-save" ${readOnly || state.saving ? "disabled" : ""}>${state.saving ? "Saving..." : state.draft.page_id ? "Update Signal" : "Save Signal"}</button>
+          <button class="action-btn" type="button" id="focus-cancel">Clear</button>
+        </div>
+      `;
+
+      const signalInput = document.getElementById("focus-signal-name");
+      const startInput = document.getElementById("focus-start");
+      const durationInput = document.getElementById("focus-duration");
+      const modeInput = document.getElementById("focus-mode");
+      const saveButton = document.getElementById("focus-save");
+      const cancelButton = document.getElementById("focus-cancel");
+
+      if (signalInput) {
+        signalInput.addEventListener("input", () => {
+          state.draft.signal = signalInput.value;
+        });
+      }
+      if (startInput) {
+        startInput.addEventListener("change", () => {
+          syncDraftFromForm();
+          renderPlanner();
+          renderEditor();
+        });
+      }
+      if (durationInput) {
+        durationInput.addEventListener("change", () => {
+          syncDraftFromForm();
+          renderPlanner();
+          renderEditor();
+        });
+      }
+      if (modeInput) {
+        modeInput.addEventListener("change", () => {
+          state.draft.mode = modeInput.value;
+          renderEditor();
+          renderPlanner();
+        });
+      }
+
+      els.editorShell.querySelectorAll(".presence-btn").forEach((button) => {
+        button.addEventListener("click", () => {
+          setPresence(button.dataset.presence);
+        });
+      });
+
+      if (saveButton) {
+        saveButton.addEventListener("click", saveDraft);
+      }
+      if (cancelButton) {
+        cancelButton.addEventListener("click", () => {
+          resetDraft();
+        });
+      }
+    }
+
+    async function fetchContext() {
+      const params = new URLSearchParams({
+        week_start: state.weekStart,
+        domain: state.domain,
+      });
+      const response = await fetch(`/api/focus-blocks/context?${params.toString()}`);
+      if (!response.ok) {
+        throw new Error("Could not load focus block context.");
+      }
+      const payload = await response.json();
+      state.payload = payload;
+      state.weekStart = payload.week_start;
+      state.selectedDayIso = payload.days.some((day) => day.iso === state.selectedDayIso)
+        ? state.selectedDayIso
+        : payload.selected_day_iso;
+      if (!payload.nodes.some((node) => node.page_id === state.selectedNodeId)) {
+        state.selectedNodeId = null;
+      }
+      if (state.draft) {
+        const matchingNode = payload.nodes.find((node) => node.page_id === state.draft.arc_node_id);
+        if (!matchingNode) {
+          state.draft = null;
+        }
+      }
+      const url = new URL(window.location.href);
+      url.searchParams.set("week_start", state.weekStart);
+      url.searchParams.set("domain", state.domain);
+      history.replaceState({}, "", url);
+    }
+
+    async function refreshContext() {
+      try {
+        await fetchContext();
+        renderAll();
+      } catch (error) {
+        setStatusMessage(error.message || "Planner refresh failed.", "error");
+      }
+    }
+
+    async function saveDraft() {
+      if (!state.draft || state.saving) {
+        return;
+      }
+      syncDraftFromForm();
+      if (!state.draft.signal.trim()) {
+        setStatusMessage("Signal name is still blank.", "error");
+        return;
+      }
+      state.saving = true;
+      renderEditor();
+
+      const payload = {
+        page_id: state.draft.page_id || null,
+        arc_node_id: state.draft.arc_node_id,
+        signal: state.draft.signal.trim(),
+        mode: state.draft.mode,
+        presence: Number(state.draft.presence),
+        start: state.draft.startLocal,
+        end: addMinutesToLocalInput(state.draft.startLocal, state.draft.durationMinutes),
+      };
+
+      try {
+        const response = await fetch("/api/focus-blocks/save", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        const result = await response.json();
+        if (!response.ok) {
+          throw new Error(result.detail || "Save failed.");
+        }
+        state.draft = null;
+        setStatusMessage(result.updated ? "Focus block updated in Signal Field." : "Focus block saved to Signal Field.", "success");
+        await fetchContext();
+        renderAll();
+      } catch (error) {
+        setStatusMessage(error.message || "Save failed.", "error");
+      } finally {
+        state.saving = false;
+        renderEditor();
+      }
+    }
+
+    function renderAll() {
+      renderToolbar();
+      renderDayChips();
+      renderNodeList();
+      renderPlanner();
+      renderEditor();
+      renderStatus();
+    }
+
+    els.domainToggle.querySelectorAll(".segment").forEach((button) => {
+      button.addEventListener("click", () => {
+        if (state.domain === button.dataset.domain) {
+          return;
+        }
+        state.domain = button.dataset.domain;
+        const url = new URL(window.location.href);
+        url.searchParams.set("week_start", state.weekStart);
+        url.searchParams.set("domain", state.domain);
+        history.replaceState({}, "", url);
+        renderAll();
+      });
+    });
+
+    els.weekPrev.addEventListener("click", async () => {
+      state.weekStart = addDays(state.weekStart, -7);
+      await refreshContext();
+    });
+
+    els.weekNext.addEventListener("click", async () => {
+      state.weekStart = addDays(state.weekStart, 7);
+      await refreshContext();
+    });
+
+    els.weekToday.addEventListener("click", async () => {
+      state.weekStart = weekStartForDate(state.payload.today_iso);
+      state.selectedDayIso = state.payload.today_iso;
+      await refreshContext();
+    });
+
+    compactQuery.addEventListener("change", () => {
+      renderDayChips();
+      renderPlanner();
+    });
+
+    renderAll();
+  </script>
+</body>
+</html>

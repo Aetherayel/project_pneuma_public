@@ -1,0 +1,4208 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Aurora</title>
+
+  <link rel="icon" href="/static/favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="/static/favicon.png">
+
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;500;600&display=swap");
+
+    :root{
+      --bg:#070A12;
+      --panel:rgba(255,255,255,.06);
+      --panel2:rgba(255,255,255,.08);
+      --text:#EAF0FF;
+      --muted:rgba(234,240,255,.72);
+      --line:rgba(234,240,255,.12);
+      --accent:#8AE6FF;
+      --ok:#5CFFB0;
+      --warn:#FFD37A;
+      --bad:#FF7A7A;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 14px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      margin: 0;
+      color: var(--text);
+      background: radial-gradient(1200px 600px at 20% -10%, rgba(138,230,255,.18), transparent 55%),
+                  radial-gradient(900px 500px at 90% 0%, rgba(92,255,176,.10), transparent 55%),
+                  linear-gradient(180deg, #050712, #070A12 35%, #060812);
+      min-height: 100vh;
+    }
+
+    /* subtle grid */
+    body:before{
+      content:"";
+      position:fixed; inset:0;
+      background-image:
+        linear-gradient(to right, rgba(255,255,255,.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,.04) 1px, transparent 1px);
+      background-size: 42px 42px;
+      opacity:.22;
+      pointer-events:none;
+      mask-image: radial-gradient(900px 600px at 40% 10%, black 45%, transparent 72%);
+    }
+
+    .wrap { max-width: 980px; margin: 26px auto; padding: 0 18px 40px; }
+
+    header{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:14px; flex-wrap:wrap;
+      margin-bottom: 16px;
+    }
+
+    .brand{
+      display:flex; align-items:center; gap:12px;
+    }
+
+    .brand-icon{
+      width: 28px;
+      height: 28px;
+      border-radius: 10px;
+      box-shadow: 0 10px 22px rgba(0,0,0,.25);
+    }
+
+    .brand-text{
+      display:flex;
+      align-items:baseline;
+      gap:10px;
+    }
+
+    .brand h1{
+      margin:0;
+      font-size: 1.6rem;
+      letter-spacing: .3px;
+    }
+    .brand .sub{
+      color: var(--muted);
+      font-size:.95rem;
+    }
+
+    .pills{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255,255,255,.05);
+      box-shadow: var(--shadow);
+      font-size: .9rem;
+      color: var(--muted);
+      text-decoration: none;
+    }
+    .dot{ width:9px; height:9px; border-radius:99px; background: var(--ok); box-shadow: 0 0 18px rgba(92,255,176,.55); }
+    .dot.warn{ background: var(--warn); box-shadow: 0 0 18px rgba(255,211,122,.45); }
+    .dot.bad{ background: var(--bad); box-shadow: 0 0 18px rgba(255,122,122,.45); }
+
+    .msg {
+      margin: 14px 0 18px;
+      padding: 12px 14px;
+      border-radius: var(--radius);
+      border: 1px solid rgba(138,230,255,.25);
+      background: rgba(138,230,255,.08);
+      color: var(--text);
+      box-shadow: var(--shadow);
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap: 14px;
+    }
+    @media (max-width: 840px){
+      .grid{ grid-template-columns: 1fr; }
+    }
+
+    .pneuma-panel{
+      margin-bottom: 14px;
+      background: linear-gradient(180deg, rgba(138,230,255,.10), rgba(255,255,255,.04));
+    }
+    .pneuma-grid{
+      display:grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+    @media (max-width: 840px){
+      .pneuma-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    .pneuma-card{
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255,255,255,.05);
+      padding: 12px;
+      min-height: 108px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      gap: 8px;
+    }
+    .pneuma-card.pneuma-good{
+      border-color: rgba(92,255,176,.34);
+      background: linear-gradient(180deg, rgba(92,255,176,.14), rgba(255,255,255,.05));
+      box-shadow: inset 0 0 0 1px rgba(92,255,176,.06);
+    }
+    .pneuma-card.pneuma-warn{
+      border-color: rgba(255,211,122,.34);
+      background: linear-gradient(180deg, rgba(255,211,122,.14), rgba(255,255,255,.05));
+      box-shadow: inset 0 0 0 1px rgba(255,211,122,.05);
+    }
+    .pneuma-card.pneuma-bad{
+      border-color: rgba(255,122,122,.34);
+      background: linear-gradient(180deg, rgba(255,122,122,.14), rgba(255,255,255,.05));
+      box-shadow: inset 0 0 0 1px rgba(255,122,122,.05);
+    }
+    .pneuma-card.pneuma-neutral{
+      border-color: rgba(234,240,255,.14);
+    }
+    .pneuma-label{
+      color: var(--muted);
+      font-size: .82rem;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+    .pneuma-value{
+      font-size: 2rem;
+      line-height: 1;
+      font-weight: 700;
+    }
+    .pneuma-card.pneuma-good .pneuma-value,
+    .pneuma-card.pneuma-good .pneuma-status{
+      color: var(--ok);
+    }
+    .pneuma-card.pneuma-warn .pneuma-value,
+    .pneuma-card.pneuma-warn .pneuma-status{
+      color: var(--warn);
+    }
+    .pneuma-card.pneuma-bad .pneuma-value,
+    .pneuma-card.pneuma-bad .pneuma-status{
+      color: var(--bad);
+    }
+    .pneuma-meta{
+      color: var(--muted);
+      font-size: .88rem;
+    }
+    .pneuma-status{
+      font-size: 1.05rem;
+      line-height: 1.25;
+      font-weight: 650;
+    }
+    .pneuma-chip{
+      display:inline-flex;
+      align-items:center;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      width: fit-content;
+    }
+    .pneuma-chip.pneuma-good{
+      border-color: rgba(92,255,176,.28);
+      color: var(--ok);
+    }
+    .pneuma-chip.pneuma-warn{
+      border-color: rgba(255,211,122,.28);
+      color: var(--warn);
+    }
+    .pneuma-chip.pneuma-bad{
+      border-color: rgba(255,122,122,.28);
+      color: var(--bad);
+    }
+    .pneuma-empty{
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: .9rem;
+    }
+    .index-panel{
+      margin-bottom: 14px;
+      background:
+        radial-gradient(700px 340px at 0% 0%, rgba(255,211,122,.16), transparent 62%),
+        radial-gradient(520px 260px at 100% 0%, rgba(92,255,176,.10), transparent 55%),
+        linear-gradient(180deg, rgba(93,76,52,.42), rgba(255,255,255,.04));
+    }
+    .index-grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+    .index-familiar{
+      display:grid;
+      grid-template-columns: 220px 1fr;
+      gap: 14px;
+      align-items: stretch;
+    }
+    .index-avatar{
+      min-height: 220px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.1);
+      background: linear-gradient(180deg, rgba(18,20,28,.62), rgba(8,10,18,.85));
+      box-shadow: var(--shadow);
+      padding: 16px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      position:relative;
+      overflow:hidden;
+    }
+    .index-avatar:before{
+      content:"";
+      position:absolute;
+      inset:auto -20% -35% auto;
+      width: 220px;
+      height: 220px;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(255,255,255,.12), transparent 62%);
+      pointer-events:none;
+    }
+    .index-avatar.gentle{
+      border-color: rgba(255,211,122,.28);
+    }
+    .index-avatar.dry{
+      border-color: rgba(138,230,255,.26);
+    }
+    .index-avatar.firm{
+      border-color: rgba(255,122,122,.24);
+    }
+    .index-avatar-art{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 10px 0 4px;
+    }
+    .index-avatar-art img{
+      display:block;
+      width: min(100%, 180px);
+      max-height: 150px;
+      object-fit: contain;
+      filter: drop-shadow(0 12px 24px rgba(0,0,0,.35));
+    }
+    .index-voice{
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(255,255,255,.05);
+      box-shadow: var(--shadow);
+      padding: 16px;
+      display:flex;
+      flex-direction:column;
+      gap: 12px;
+      justify-content:space-between;
+    }
+    .index-line{
+      margin: 0;
+      font-size: 1.28rem;
+      line-height: 1.35;
+      font-weight: 650;
+    }
+    .index-detail{
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: .98rem;
+      line-height: 1.45;
+    }
+    .index-step{
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.45;
+    }
+    .index-meta{
+      display:flex;
+      flex-wrap:wrap;
+      gap: 8px;
+      color: var(--muted);
+      font-size: .88rem;
+    }
+    .index-chip{
+      display:inline-flex;
+      align-items:center;
+      padding: 5px 9px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.05);
+    }
+    .index-chip-button{
+      appearance:none;
+      color: inherit;
+      cursor:pointer;
+      font: inherit;
+    }
+    .index-chip-button.is-active{
+      background: rgba(255,255,255,.12);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
+    }
+    .index-chip.good{
+      border-color: rgba(92,255,176,.28);
+      color: var(--ok);
+    }
+    .index-chip.warn{
+      border-color: rgba(255,211,122,.28);
+      color: var(--warn);
+    }
+    .index-chip.bad{
+      border-color: rgba(255,122,122,.28);
+      color: var(--bad);
+    }
+    .index-tag-explanations{
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+    }
+    .index-tag-note{
+      display:flex;
+      flex-wrap:wrap;
+      align-items:flex-start;
+      gap: 8px;
+      color: var(--muted);
+      font-size: .9rem;
+      line-height: 1.45;
+    }
+    @media (max-width: 840px){
+      .index-grid,
+      .index-familiar{
+        grid-template-columns: 1fr;
+      }
+    }
+    .pneuma-actions{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .pneuma-link{
+      display:inline-flex;
+      align-items:center;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: .82rem;
+      cursor: pointer;
+    }
+    .pneuma-link:hover{
+      border-color: rgba(138,230,255,.35);
+      background: rgba(255,255,255,.08);
+    }
+    .pneuma-dialog{
+      width: min(760px, calc(100vw - 32px));
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #0a0f1b;
+      color: var(--text);
+      padding: 0;
+      box-shadow: 0 24px 80px rgba(0,0,0,.55);
+    }
+    .pneuma-dialog::backdrop{
+      background: rgba(0,0,0,.55);
+      backdrop-filter: blur(3px);
+    }
+    .pneuma-dialog-inner{
+      padding: 18px;
+    }
+    .pneuma-dialog-head{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .pneuma-dialog-title{
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+    .pneuma-dialog-sub{
+      color: var(--muted);
+      font-size: .92rem;
+      margin-top: 4px;
+    }
+    .pneuma-dialog-close{
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.05);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 8px 10px;
+      cursor:pointer;
+    }
+    .pneuma-trend{
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      border-radius: 12px;
+      padding: 10px 12px;
+      margin-bottom: 12px;
+    }
+    .pneuma-trend-copy{
+      color: var(--muted);
+      font-size: .9rem;
+      margin-top: 8px;
+    }
+    .pneuma-chart{
+      display:grid;
+      gap: 8px;
+    }
+    .pneuma-chart.compact{
+      gap: 6px;
+    }
+    .pneuma-chart-meta{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      flex-wrap:wrap;
+      color: var(--muted);
+      font-size: .78rem;
+      letter-spacing: .02em;
+    }
+    .pneuma-chart-svg{
+      width: 100%;
+      height: 74px;
+      display:block;
+      overflow: visible;
+    }
+    .pneuma-chart.compact .pneuma-chart-svg{
+      height: 56px;
+    }
+    .pneuma-chart-grid{
+      stroke: rgba(234,240,255,.10);
+      stroke-width: .8;
+    }
+    .pneuma-chart-line{
+      fill: none;
+      stroke: var(--accent);
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .pneuma-chart.compact .pneuma-chart-line{
+      stroke-width: 1.8;
+    }
+    .pneuma-chart-dot{
+      fill: var(--ok);
+      stroke: #0a0f1b;
+      stroke-width: 1.2;
+    }
+    .pneuma-chart-caption{
+      color: rgba(234,240,255,.58);
+      font-size: .74rem;
+    }
+    .pneuma-breakdown-note{
+      color: var(--muted);
+      font-size: .86rem;
+      margin-bottom: 10px;
+    }
+    .pneuma-breakdown{
+      display:grid;
+      gap: 8px;
+    }
+    .pneuma-breakdown-row{
+      display:grid;
+      grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(72px, auto));
+      gap: 10px;
+      align-items:center;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255,255,255,.04);
+      padding: 10px 12px;
+    }
+    @media (max-width: 720px){
+      .pneuma-breakdown-row{
+        grid-template-columns: 1fr;
+      }
+    }
+    .pneuma-breakdown-label{
+      font-weight: 650;
+    }
+    .pneuma-breakdown-raw{
+      color: var(--muted);
+      font-size: .85rem;
+      margin-top: 2px;
+    }
+    .pneuma-breakdown-trend{
+      color: var(--accent);
+      font-size: .8rem;
+      margin-top: 8px;
+      line-height: 1.35;
+    }
+    .pneuma-breakdown-actions{
+      margin-top: 10px;
+    }
+    .pneuma-mini-link{
+      display:inline-flex;
+      align-items:center;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 5px 9px;
+      font-size: .76rem;
+      cursor: pointer;
+    }
+    .pneuma-mini-link:hover{
+      border-color: rgba(138,230,255,.35);
+      background: rgba(255,255,255,.08);
+    }
+    .pneuma-breakdown-visual{
+      margin-top: 8px;
+      display:grid;
+      gap: 8px;
+    }
+    .pneuma-breakdown-metric{
+      text-align:right;
+      font-size: .88rem;
+    }
+    @media (max-width: 720px){
+      .pneuma-breakdown-metric{
+        text-align:left;
+      }
+    }
+    .pneuma-breakdown-metric strong{
+      display:block;
+      color: var(--text);
+      font-size: .95rem;
+    }
+    .pneuma-rubric-dialog{
+      width: min(640px, calc(100vw - 32px));
+    }
+    .pneuma-rubric-summary{
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      border-radius: 12px;
+      padding: 10px 12px;
+      color: var(--muted);
+      font-size: .9rem;
+      line-height: 1.45;
+      margin-bottom: 12px;
+    }
+    .pneuma-rubric-meta{
+      display:flex;
+      flex-wrap:wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .pneuma-rubric-pill{
+      display:inline-flex;
+      align-items:center;
+      padding: 5px 9px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      color: var(--muted);
+      font-size: .78rem;
+    }
+    .pneuma-rubric-groups{
+      display:grid;
+      gap: 10px;
+    }
+    .pneuma-rubric-group{
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255,255,255,.04);
+      padding: 12px;
+    }
+    .pneuma-rubric-group-title{
+      font-weight: 650;
+      margin-bottom: 4px;
+    }
+    .pneuma-rubric-group-note{
+      color: var(--muted);
+      font-size: .82rem;
+      line-height: 1.4;
+      margin-bottom: 10px;
+    }
+    .pneuma-rubric-rows{
+      display:grid;
+      gap: 8px;
+    }
+    .pneuma-rubric-row{
+      display:grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(90px, auto);
+      gap: 10px;
+      border: 1px solid rgba(234,240,255,.08);
+      border-radius: 10px;
+      padding: 10px;
+      align-items:start;
+    }
+    @media (max-width: 640px){
+      .pneuma-rubric-row{
+        grid-template-columns: 1fr;
+      }
+    }
+    .pneuma-rubric-row.active{
+      border-color: rgba(138,230,255,.34);
+      background: rgba(138,230,255,.08);
+      box-shadow: inset 0 0 0 1px rgba(138,230,255,.08);
+    }
+    .pneuma-rubric-row.active .pneuma-rubric-score{
+      color: var(--accent);
+    }
+    .pneuma-rubric-input{
+      font-weight: 600;
+    }
+    .pneuma-rubric-note{
+      color: var(--muted);
+      font-size: .8rem;
+      line-height: 1.35;
+      margin-top: 4px;
+    }
+    .pneuma-rubric-score{
+      text-align:right;
+      font-weight: 700;
+    }
+    @media (max-width: 640px){
+      .pneuma-rubric-score{
+        text-align:left;
+      }
+    }
+    .pneuma-rubric-footnote{
+      color: rgba(234,240,255,.62);
+      font-size: .79rem;
+      line-height: 1.4;
+      margin-top: 12px;
+    }
+
+    .panel{
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .panel .hd{
+      padding: 14px 14px 12px;
+      border-bottom: 1px solid var(--line);
+      display:flex; align-items:center; justify-content:space-between;
+      gap: 10px;
+    }
+    .panel .hd h2{
+      margin:0;
+      font-size: 1.05rem;
+      letter-spacing: .2px;
+    }
+    .panel .bd{ padding: 14px; }
+    details.panel-toggle > summary{
+      list-style: none;
+      cursor: pointer;
+      padding: 14px 14px 12px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+    }
+    details.panel-toggle > summary::-webkit-details-marker{ display:none; }
+    details.panel-toggle[open] > summary{
+      border-bottom: 1px solid var(--line);
+    }
+    .panel-toggle-copy{
+      min-width: 0;
+    }
+    .panel-toggle-copy h2{
+      margin:0;
+      font-size: 1.05rem;
+      letter-spacing: .2px;
+    }
+    .panel-toggle-meta{
+      display:inline-flex;
+      align-items:center;
+      gap: 10px;
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+    .panel-toggle-caret{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      font-size: .95rem;
+      transition: transform .12s ease;
+    }
+    details.panel-toggle[open] .panel-toggle-caret{
+      transform: rotate(45deg);
+    }
+    details.inline-toggle{
+      margin-top: 12px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255,255,255,.03);
+      overflow: hidden;
+    }
+    details.inline-toggle > summary{
+      list-style: none;
+      cursor: pointer;
+      padding: 12px 14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      color: var(--muted);
+    }
+    details.inline-toggle > summary::-webkit-details-marker{ display:none; }
+    details.inline-toggle[open] > summary{
+      border-bottom: 1px solid var(--line);
+    }
+    .inline-toggle-copy{
+      font-size: .92rem;
+    }
+    .inline-toggle-body{
+      padding: 14px;
+    }
+
+    .row { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    a.btn, button.btn{
+      display:inline-flex;
+      align-items:center;
+      gap: 10px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.06);
+      text-decoration:none;
+      color: var(--text);
+      font-weight: 650;
+      cursor:pointer;
+      transition: transform .06s ease, background .12s ease, border-color .12s ease;
+      box-shadow: 0 10px 22px rgba(0,0,0,.25);
+    }
+    .btn:hover{
+      background: rgba(255,255,255,.09);
+      border-color: rgba(138,230,255,.35);
+      transform: translateY(-1px);
+    }
+    .btn:active{ transform: translateY(0px); }
+    .btn.primary{
+      border-color: rgba(138,230,255,.35);
+      background: linear-gradient(180deg, rgba(138,230,255,.14), rgba(255,255,255,.06));
+    }
+    .btn.danger{
+      border-color: rgba(255,122,122,.35);
+      background: linear-gradient(180deg, rgba(255,122,122,.14), rgba(255,255,255,.06));
+    }
+
+    label { display:block; font-size: .9rem; margin-bottom: 8px; color: var(--muted); }
+    input[type=text],
+    input[type=number],
+    input[type=datetime-local]{
+      width: 100%;
+      padding: 12px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,.25);
+      color: var(--text);
+      outline: none;
+    }
+    input[type=text]:focus,
+    input[type=number]:focus,
+    input[type=datetime-local]:focus{
+      border-color: rgba(138,230,255,.45);
+      box-shadow: 0 0 0 3px rgba(138,230,255,.12);
+    }
+    input[type=range]{
+      width: 100%;
+      accent-color: var(--accent);
+    }
+  /* --- Undercurrent v2 inputs --- */
+  select, textarea{
+    width: 100%;
+    padding: 12px 12px;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: rgba(0,0,0,.25);
+    color: var(--text);
+    outline: none;
+  }
+  select:focus, textarea:focus{
+    border-color: rgba(138,230,255,.45);
+    box-shadow: 0 0 0 3px rgba(138,230,255,.12);
+  }
+  textarea{ min-height: 110px; resize: vertical; }
+
+  .uc-grid{
+    display:grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .phase-stack{
+    display:grid;
+    gap: 12px;
+  }
+  .phase-card{
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: rgba(0,0,0,.16);
+    padding: 14px;
+  }
+  .phase-card h3{
+    margin: 0 0 4px;
+    font-size: 1rem;
+    letter-spacing: .2px;
+  }
+  .phase-copy{
+    margin: 0 0 12px;
+    color: rgba(234,240,255,.68);
+    font-size: .9rem;
+  }
+  .phase-status-grid{
+    display:grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .intent-banner{
+    margin-bottom: 12px;
+    padding: 14px;
+    border-radius: 14px;
+    border: 1px solid rgba(138,230,255,.22);
+    background:
+      linear-gradient(180deg, rgba(138,230,255,.12), rgba(255,255,255,.04)),
+      rgba(0,0,0,.18);
+  }
+  .intent-banner.empty{
+    border-color: var(--line);
+    background: rgba(255,255,255,.04);
+  }
+  .intent-label{
+    margin-bottom: 6px;
+    font-size: .8rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: rgba(138,230,255,.92);
+  }
+  .intent-banner.empty .intent-label{
+    color: rgba(234,240,255,.72);
+  }
+  .intent-banner p{
+    margin: 0;
+    color: var(--text);
+    line-height: 1.45;
+  }
+  .phase-status{
+    display:block;
+    padding: 14px;
+    border-radius: 14px;
+    border: 1px solid var(--line);
+    background: rgba(255,255,255,.04);
+    color: var(--text);
+    text-decoration:none;
+    transition: transform .08s ease, border-color .12s ease, background .12s ease;
+  }
+  .phase-status:hover{
+    transform: translateY(-1px);
+    border-color: rgba(138,230,255,.35);
+    background: rgba(255,255,255,.06);
+  }
+  .phase-status.active{
+    border-color: rgba(138,230,255,.4);
+    background: rgba(138,230,255,.1);
+  }
+  .phase-status.done{
+    box-shadow: inset 0 0 0 1px rgba(92,255,176,.18);
+  }
+  .phase-status-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom: 6px;
+  }
+  .phase-status-title{
+    font-weight: 700;
+  }
+  .phase-state{
+    font-size:.8rem;
+    padding: 4px 8px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: rgba(0,0,0,.18);
+    color: rgba(234,240,255,.8);
+  }
+  .phase-state.done{
+    border-color: rgba(92,255,176,.35);
+    background: rgba(92,255,176,.14);
+    color: var(--text);
+  }
+  .phase-window{
+    font-size:.82rem;
+    color: rgba(234,240,255,.64);
+  }
+  .phase-open{
+    margin-top: 10px;
+    font-size:.82rem;
+    color: rgba(138,230,255,.92);
+  }
+  .slider-field{
+    display:grid;
+    gap: 6px;
+  }
+  .slider-scale{
+    display:flex;
+    justify-content:space-between;
+    font-size:.78rem;
+    color: rgba(234,240,255,.55);
+  }
+  .choice-grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 8px;
+  }
+  .choice{
+    position: relative;
+  }
+  .choice input{
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .choice span{
+    display:flex;
+    align-items:center;
+    min-height: 48px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: rgba(255,255,255,.04);
+    color: var(--muted);
+    transition: background .12s ease, border-color .12s ease, color .12s ease, transform .12s ease;
+  }
+  .choice input:checked + span{
+    color: var(--text);
+    border-color: rgba(138,230,255,.38);
+    background: rgba(138,230,255,.12);
+    transform: translateY(-1px);
+  }
+  @media (max-width: 840px){
+    .uc-grid{ grid-template-columns: 1fr; }
+    .choice-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .phase-status-grid{ grid-template-columns: 1fr; }
+  }
+  .uc-grid label{ margin-bottom: 6px; }
+    .hint{
+      margin-top: 8px;
+      color: rgba(234,240,255,.6);
+      font-size:.85rem;
+      line-height: 1.35;
+    }
+
+    details.log{
+      border-top: 1px solid var(--line);
+      padding: 0;
+      background: rgba(0,0,0,.18);
+    }
+    details.log summary{
+      list-style:none;
+      cursor:pointer;
+      padding: 12px 14px;
+      color: var(--muted);
+      display:flex; align-items:center; justify-content:space-between;
+      gap:10px;
+    }
+    details.log summary::-webkit-details-marker{ display:none; }
+    pre{
+      margin: 0;
+      padding: 14px;
+      white-space: pre-wrap;
+      background: rgba(0,0,0,.55);
+      color: #EAF0FF;
+      overflow:auto;
+      border-top: 1px solid var(--line);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: .9rem;
+      line-height: 1.35;
+    }
+
+.badge{
+  margin-left:auto;
+  font-size:.8rem;
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  color: rgba(234,240,255,.75);
+  background: rgba(0,0,0,.18);
+}
+.badge.done{
+  border-color: rgba(92,255,176,.35);
+  background: rgba(92,255,176,.12);
+  color: rgba(234,240,255,.95);
+}
+.emo-grid .btn{
+  width: 100%;
+  justify-content: flex-start;
+}
+    .small{
+      font-size:.85rem;
+      color: rgba(234,240,255,.62);
+    }
+.emo-grid{
+  display:grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+@media (max-width: 840px){
+  .emo-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+.emo-grid form{ margin:0; }
+.emo-grid .btn{
+  width: 100%;
+  justify-content: flex-start;
+}
+
+.column-stack{
+  display:grid;
+  gap: 14px;
+}
+
+.rites-list{
+  display:grid;
+  gap: 10px;
+}
+
+.rite-form{
+  margin: 0;
+}
+
+.rite-item{
+  position: relative;
+  display:flex;
+  align-items:flex-start;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: rgba(0,0,0,.18);
+}
+
+.rite-item.actionable{
+  cursor: pointer;
+  transition: transform .06s ease, background .12s ease, border-color .12s ease;
+}
+
+.rite-item.actionable:hover{
+  transform: translateY(-1px);
+  background: rgba(255,255,255,.05);
+  border-color: rgba(138,230,255,.32);
+}
+
+.rite-popout-trigger{
+  width: 100%;
+  appearance: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
+
+.rite-toggle{
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.rite-box{
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: rgba(0,0,0,.28);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color: transparent;
+  font-size: .95rem;
+  font-weight: 700;
+  margin-top: 1px;
+}
+
+.rite-box.checked{
+  border-color: rgba(92,255,176,.55);
+  background: rgba(92,255,176,.16);
+  color: var(--ok);
+}
+
+.rite-box.manual{
+  border-color: rgba(255,211,122,.35);
+  background: rgba(255,211,122,.12);
+  color: var(--warn);
+  font-size: .72rem;
+  letter-spacing: .04em;
+}
+
+.rite-copy{
+  min-width: 0;
+  flex: 1;
+}
+
+.rite-name-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.rite-name{
+  font-weight: 650;
+}
+
+.rite-meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.rite-pill{
+  display:inline-flex;
+  align-items:center;
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,.04);
+  color: var(--muted);
+  font-size: .78rem;
+}
+
+.rite-dialog{
+  width: min(560px, calc(100vw - 32px));
+}
+
+.rite-dialog-form{
+  display:grid;
+  gap: 12px;
+}
+
+.rite-dialog-note{
+  color: var(--muted);
+  font-size: .88rem;
+  line-height: 1.45;
+}
+
+.rite-dialog-actions{
+  justify-content: flex-end;
+}
+
+.quest-list{
+  display:grid;
+  gap: 10px;
+}
+
+.quest-card{
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(0,0,0,.18);
+  padding: 14px;
+}
+
+.quest-card.good{
+  border-color: rgba(92,255,176,.25);
+  background: linear-gradient(180deg, rgba(92,255,176,.10), rgba(0,0,0,.18));
+}
+
+.quest-card.warn{
+  border-color: rgba(255,211,122,.24);
+  background: linear-gradient(180deg, rgba(255,211,122,.10), rgba(0,0,0,.18));
+}
+
+.quest-card.bad{
+  border-color: rgba(255,122,122,.24);
+  background: linear-gradient(180deg, rgba(255,122,122,.10), rgba(0,0,0,.18));
+}
+
+.quest-top{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap: 10px;
+}
+
+.quest-slot{
+  font-size: .78rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: rgba(138,230,255,.92);
+  margin-bottom: 6px;
+}
+
+.quest-name{
+  font-size: 1.02rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.quest-status{
+  display:inline-flex;
+  align-items:center;
+  padding: 5px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,.04);
+  color: var(--muted);
+  font-size: .78rem;
+  white-space: nowrap;
+}
+
+.quest-status.good{
+  border-color: rgba(92,255,176,.28);
+  color: var(--ok);
+}
+
+.quest-status.warn{
+  border-color: rgba(255,211,122,.28);
+  color: var(--warn);
+}
+
+.quest-status.bad{
+  border-color: rgba(255,122,122,.28);
+  color: var(--bad);
+}
+
+.quest-copy{
+  margin-top: 10px;
+  color: var(--text);
+  line-height: 1.45;
+}
+
+.quest-meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.pneuma-value-line{
+  display:flex;
+  align-items:flex-end;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.quest-actions{
+  margin-top: 12px;
+  display:flex;
+  flex-wrap:wrap;
+  gap: 10px;
+}
+
+.quest-note{
+  margin-top: 10px;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.quest-form-grid{
+  display:grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.quest-switcher{
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,.04);
+}
+
+.quest-switcher-row{
+  display:grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items:end;
+}
+
+.echoform-carousel{
+  display:flex;
+  gap: 12px;
+  overflow-x:auto;
+  padding-bottom: 6px;
+  scroll-snap-type: x proximity;
+}
+
+.echoform-carousel::-webkit-scrollbar{
+  height: 8px;
+}
+
+.echoform-carousel::-webkit-scrollbar-thumb{
+  background: rgba(255,255,255,.14);
+  border-radius: 999px;
+}
+
+.echoform-choice{
+  flex: 0 0 min(320px, 84vw);
+  scroll-snap-align: start;
+}
+
+.echoform-choice-card,
+.echoform-active-card{
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background:
+    linear-gradient(180deg, rgba(138,230,255,.10), rgba(0,0,0,.18)),
+    rgba(0,0,0,.16);
+  color: inherit;
+  font: inherit;
+  appearance: none;
+  box-shadow: var(--shadow);
+}
+
+.echoform-choice-card{
+  display:flex;
+  flex-direction:column;
+  gap: 12px;
+  min-height: 100%;
+  padding: 12px;
+  text-align:left;
+  cursor:pointer;
+  transition: transform .18s ease, border-color .18s ease, background .18s ease;
+}
+
+.echoform-choice-card:hover,
+.echoform-choice-card:focus-visible,
+.echoform-active-card:hover,
+.echoform-active-card:focus-visible{
+  transform: translateY(-1px);
+  border-color: rgba(138,230,255,.34);
+  outline: none;
+}
+
+.echoform-active-card{
+  display:grid;
+  grid-template-columns: minmax(0, 220px) minmax(0, 1fr);
+  gap: 14px;
+  padding: 14px;
+  text-align:left;
+  cursor:pointer;
+  transition: transform .18s ease, border-color .18s ease;
+}
+
+.echoform-active-card.logged{
+  cursor:default;
+}
+
+.echoform-active-card.logged:hover{
+  transform:none;
+  border-color: rgba(92,255,176,.30);
+}
+
+.echoform-art{
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.08);
+  background: rgba(255,255,255,.04);
+}
+
+.echoform-art-fallback{
+  display:grid;
+  place-items:center;
+  color: var(--muted);
+  font-size: .9rem;
+  text-align:center;
+  padding: 16px;
+}
+
+.echoform-copy{
+  display:flex;
+  flex-direction:column;
+  gap: 8px;
+}
+
+.echoform-kicker{
+  font-size: .74rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: rgba(138,230,255,.92);
+}
+
+.echoform-name{
+  font-size: 1.08rem;
+  font-weight: 700;
+  line-height: 1.28;
+}
+
+.echoform-text{
+  color: var(--text);
+  line-height: 1.48;
+}
+
+.echoform-subtext,
+.echoform-shadow,
+.echoform-swipe-note{
+  color: var(--muted);
+  line-height: 1.48;
+}
+
+.echoform-meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap: 8px;
+}
+
+.echoform-footer{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.echoform-action{
+  font-size: .78rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.echoform-swipe-note{
+  margin-top: 10px;
+  font-size: .88rem;
+}
+
+@media (max-width: 640px){
+  .echoform-active-card{
+    grid-template-columns: 1fr;
+  }
+}
+
+.quest-toggle{
+  margin-top: 12px;
+}
+
+.quest-toggle-button{
+  display:inline-flex;
+  align-items:center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,.06);
+  color: var(--text);
+  font-weight: 650;
+  box-shadow: 0 10px 22px rgba(0,0,0,.25);
+}
+
+@media (max-width: 900px){
+  .quest-form-grid,
+  .quest-switcher-row{
+    grid-template-columns: 1fr;
+  }
+}
+
+    /* Hearth journal refresh */
+    :root{
+      --bg-deep:#0b0f12;
+      --bg-forest:#111816;
+      --bg-moss:#171d1b;
+      --panel:rgba(23,27,26,.94);
+      --panel2:rgba(31,27,22,.94);
+      --panel-warm:rgba(33,28,23,.96);
+      --panel-cool:rgba(18,23,23,.95);
+      --border-soft:rgba(87,72,52,.8);
+      --border-faint:rgba(140,121,94,.24);
+      --text:#eee6d6;
+      --text-main:#eee6d6;
+      --text-muted:#a89f90;
+      --text-faint:rgba(238,230,214,.6);
+      --accent:#76c7b7;
+      --ok:#7d9b6f;
+      --warn:#d99a4e;
+      --bad:#b86b5f;
+      --ember:#d99a4e;
+      --moss:#7d9b6f;
+      --moon:#9fb7c7;
+      --aether:#76c7b7;
+      --danger-soft:#b86b5f;
+      --line:rgba(140,121,94,.24);
+      --shadow:0 24px 48px rgba(0,0,0,.42);
+      --serif:"Source Serif 4","Iowan Old Style","Palatino Linotype","Book Antiqua",Georgia,serif;
+      --display:"Cinzel","Iowan Old Style",Georgia,serif;
+      --sans:"Avenir Next","Segoe UI","Trebuchet MS",sans-serif;
+      --radius:18px;
+    }
+
+    html{
+      color-scheme: dark;
+    }
+
+    body{
+      font-family:var(--serif);
+      color:var(--text-main);
+      background:
+        radial-gradient(1100px 700px at 10% -10%, rgba(118,199,183,.12), transparent 58%),
+        radial-gradient(900px 520px at 92% 0%, rgba(217,154,78,.16), transparent 52%),
+        radial-gradient(900px 700px at 50% 110%, rgba(125,155,111,.08), transparent 62%),
+        linear-gradient(180deg, #090d10 0%, #101514 42%, #0b0f12 100%);
+      letter-spacing:.01em;
+    }
+
+    body:before{
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.02), transparent 28%),
+        repeating-linear-gradient(0deg, rgba(255,255,255,.012) 0 1px, transparent 1px 4px),
+        repeating-linear-gradient(90deg, rgba(0,0,0,.05) 0 1px, transparent 1px 6px);
+      background-size:auto;
+      opacity:.34;
+      mask-image:radial-gradient(1000px 720px at 50% 8%, black 34%, transparent 88%);
+    }
+
+    body:after{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      background:
+        radial-gradient(circle at 18% 14%, rgba(217,154,78,.08), transparent 18%),
+        radial-gradient(circle at 82% 16%, rgba(159,183,199,.06), transparent 24%);
+      opacity:.8;
+    }
+
+    .wrap{
+      max-width:1100px;
+      margin:0 auto;
+      padding:30px 20px 52px;
+      position:relative;
+    }
+
+    .masthead{
+      position:relative;
+      display:flex;
+      align-items:stretch;
+      min-height:clamp(260px, 34vw, 388px);
+      margin-bottom:18px;
+      z-index:20;
+      border:1px solid var(--border-soft);
+      border-radius:24px;
+      overflow:visible;
+      box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,.05);
+      background:#0b131b;
+      isolation:isolate;
+    }
+
+    .masthead:before{
+      content:"";
+      position:absolute;
+      inset:0;
+      z-index:1;
+      pointer-events:none;
+      background:
+        linear-gradient(180deg, rgba(4,8,14,.18) 0%, rgba(4,8,14,.22) 18%, rgba(4,8,14,.72) 76%, rgba(4,8,14,.88) 100%),
+        linear-gradient(90deg, rgba(5,9,15,.72) 0%, rgba(5,9,15,.38) 34%, rgba(5,9,15,.16) 58%, rgba(5,9,15,.58) 100%);
+      border-radius:inherit;
+    }
+
+    .masthead:after{
+      content:"";
+      position:absolute;
+      inset:0;
+      z-index:1;
+      pointer-events:none;
+      background:
+        radial-gradient(520px 260px at 78% 18%, rgba(118,199,183,.22), transparent 70%),
+        radial-gradient(380px 220px at 88% 14%, rgba(159,183,199,.12), transparent 62%),
+        radial-gradient(340px 180px at 12% 88%, rgba(217,154,78,.14), transparent 68%);
+      mix-blend-mode:screen;
+      opacity:.92;
+      border-radius:inherit;
+    }
+
+    .masthead-art{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      object-position:center 58%;
+      transform:scale(1.01);
+      border-radius:inherit;
+    }
+
+    .masthead-top{
+      position:absolute;
+      top:16px;
+      right:16px;
+      z-index:3;
+    }
+
+    .shortcut-menu{
+      position:relative;
+    }
+
+    .shortcut-menu[open]{
+      z-index:200;
+    }
+
+    .shortcut-menu[open]::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      z-index:1190;
+      background:rgba(4, 7, 10, .48);
+      backdrop-filter:blur(3px);
+    }
+
+    .shortcut-menu > summary{
+      list-style:none;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(7,12,18,.46);
+      color:var(--text-main);
+      box-shadow:0 14px 30px rgba(0,0,0,.24);
+      backdrop-filter:blur(14px);
+      transition:border-color .14s ease, background .14s ease, transform .14s ease;
+    }
+
+    .shortcut-menu > summary::-webkit-details-marker{
+      display:none;
+    }
+
+    .shortcut-menu > summary:hover{
+      border-color:rgba(217,154,78,.42);
+      background:rgba(7,12,18,.6);
+      transform:translateY(-1px);
+    }
+
+    .shortcut-menu[open] > summary{
+      position:fixed;
+      top:18px;
+      right:18px;
+      z-index:1201;
+      border-color:rgba(217,154,78,.42);
+      background:rgba(7,12,18,.72);
+    }
+
+    .shortcut-toggle-bars{
+      display:grid;
+      gap:4px;
+    }
+
+    .shortcut-toggle-bars span{
+      display:block;
+      width:18px;
+      height:2px;
+      border-radius:999px;
+      background:currentColor;
+      transform-origin:center;
+      transition:transform .14s ease, opacity .14s ease;
+    }
+
+    .shortcut-menu[open] .shortcut-toggle-bars span:nth-child(1){
+      transform:translateY(6px) rotate(45deg);
+    }
+
+    .shortcut-menu[open] .shortcut-toggle-bars span:nth-child(2){
+      opacity:0;
+    }
+
+    .shortcut-menu[open] .shortcut-toggle-bars span:nth-child(3){
+      transform:translateY(-6px) rotate(-45deg);
+    }
+
+    .shortcut-panel{
+      position:fixed;
+      top:18px;
+      right:18px;
+      width:min(340px, calc(100vw - 36px));
+      max-height:calc(100vh - 36px);
+      overflow:auto;
+      overscroll-behavior:contain;
+      -webkit-overflow-scrolling:touch;
+      z-index:1200;
+      padding:58px 14px 14px;
+      border:1px solid var(--border-soft);
+      border-radius:18px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.04), rgba(0,0,0,.08)),
+        rgba(11,16,22,.94);
+      box-shadow:0 24px 48px rgba(0,0,0,.4);
+      backdrop-filter:blur(18px);
+    }
+
+    .shortcut-panel:before{
+      content:"";
+      position:absolute;
+      inset:0;
+      border-radius:inherit;
+      pointer-events:none;
+      background:
+        radial-gradient(220px 120px at 100% 0%, rgba(118,199,183,.1), transparent 70%),
+        radial-gradient(220px 120px at 0% 100%, rgba(217,154,78,.1), transparent 70%);
+      opacity:.9;
+    }
+
+    .shortcut-header,
+    .shortcut-list{
+      position:relative;
+      z-index:1;
+    }
+
+    .shortcut-header{
+      margin-bottom:10px;
+    }
+
+    .shortcut-title{
+      font-family:var(--display);
+      font-size:.98rem;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:var(--text-main);
+    }
+
+    .shortcut-copy{
+      margin-top:6px;
+      color:var(--text-muted);
+      line-height:1.45;
+      font-size:.92rem;
+    }
+
+    .shortcut-list{
+      display:grid;
+      gap:8px;
+    }
+
+    .shortcut-link,
+    .shortcut-static{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:11px 12px;
+      border-radius:14px;
+      border:1px solid var(--border-faint);
+      background:rgba(255,255,255,.04);
+      color:var(--text-main);
+      text-decoration:none;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.03);
+    }
+
+    .shortcut-link:hover{
+      border-color:rgba(217,154,78,.36);
+      background:rgba(255,255,255,.08);
+    }
+
+    .shortcut-main{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
+    }
+
+    .shortcut-dot{
+      width:10px;
+      height:10px;
+      border-radius:999px;
+      background:var(--moss);
+      box-shadow:0 0 16px rgba(125,155,111,.34);
+      flex:0 0 auto;
+    }
+
+    .shortcut-dot.warn{
+      background:var(--warn);
+      box-shadow:0 0 16px rgba(217,154,78,.32);
+    }
+
+    .shortcut-label{
+      font-family:var(--serif);
+      font-size:.98rem;
+      color:var(--text-main);
+    }
+
+    .shortcut-meta{
+      font-family:var(--sans);
+      font-size:.68rem;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+      color:var(--text-faint);
+      white-space:nowrap;
+    }
+
+    .masthead-copy{
+      position:relative;
+      z-index:2;
+      margin-top:auto;
+      width:min(100%, 46rem);
+      padding:28px 26px 24px;
+      display:grid;
+      gap:12px;
+    }
+
+    .masthead-mark{
+      display:inline-flex;
+      width:fit-content;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(7,12,18,.36);
+      box-shadow:0 10px 22px rgba(0,0,0,.2);
+      font-family:var(--sans);
+      font-size:.72rem;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+      color:rgba(238,230,214,.92);
+      backdrop-filter:blur(10px);
+    }
+
+    .masthead-brand{
+      display:flex;
+      align-items:flex-end;
+      gap:14px;
+      flex-wrap:wrap;
+    }
+
+    .masthead-icon{
+      width:46px;
+      height:46px;
+      padding:4px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(7,12,18,.42);
+      box-shadow:0 14px 30px rgba(0,0,0,.28);
+      backdrop-filter:blur(12px);
+    }
+
+    .masthead-title-wrap{
+      min-width:0;
+    }
+
+    .masthead-title{
+      margin:0;
+      font-family:var(--display);
+      font-size:clamp(2.2rem, 5vw, 3.4rem);
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      line-height:.98;
+      color:#f2ecdf;
+      text-shadow:0 10px 20px rgba(0,0,0,.42);
+    }
+
+    .masthead-subtitle{
+      margin-top:8px;
+      font-family:var(--sans);
+      font-size:.76rem;
+      letter-spacing:.22em;
+      text-transform:uppercase;
+      color:rgba(236,228,214,.8);
+    }
+
+    .masthead-note{
+      margin:0;
+      max-width:40rem;
+      color:rgba(238,230,214,.88);
+      line-height:1.58;
+      font-size:1rem;
+      text-shadow:0 4px 18px rgba(0,0,0,.36);
+    }
+
+    .msg{
+      margin:14px 0 20px;
+      padding:13px 16px;
+      border-radius:16px;
+      border:1px solid rgba(217,154,78,.28);
+      background:
+        linear-gradient(180deg, rgba(217,154,78,.12), rgba(255,255,255,.03)),
+        rgba(16,18,18,.58);
+      color:var(--text-main);
+      box-shadow:0 16px 30px rgba(0,0,0,.22);
+    }
+
+    .grid{
+      grid-template-columns:minmax(0, 1.08fr) minmax(300px, .92fr);
+      gap:16px;
+    }
+
+    .column-stack{
+      gap:16px;
+    }
+
+    .panel,
+    details.panel-toggle,
+    details.log{
+      position:relative;
+      border:1px solid var(--border-soft);
+      border-radius:var(--radius);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.035), rgba(0,0,0,.08)),
+        linear-gradient(135deg, rgba(23,27,26,.96), rgba(28,24,20,.95));
+      box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,.04);
+      overflow:hidden;
+    }
+
+    .panel:before,
+    details.panel-toggle:before,
+    details.log:before{
+      content:"";
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      background:
+        radial-gradient(440px 180px at 0% 0%, rgba(217,154,78,.08), transparent 70%),
+        linear-gradient(90deg, transparent 0, rgba(255,255,255,.02) 48%, transparent 100%);
+      opacity:.8;
+    }
+
+    .pneuma-panel{
+      background:
+        radial-gradient(720px 320px at 0% 0%, rgba(118,199,183,.12), transparent 62%),
+        radial-gradient(520px 280px at 100% 0%, rgba(217,154,78,.12), transparent 58%),
+        linear-gradient(135deg, rgba(18,24,23,.98), rgba(31,25,19,.96));
+    }
+
+    .index-panel{
+      background:
+        radial-gradient(680px 300px at 0% 0%, rgba(217,154,78,.14), transparent 62%),
+        radial-gradient(420px 240px at 100% 0%, rgba(125,155,111,.12), transparent 58%),
+        linear-gradient(135deg, rgba(32,26,21,.98), rgba(19,23,23,.96));
+    }
+
+    .panel .hd{
+      padding:18px 18px 16px;
+      border-bottom:1px solid var(--border-faint);
+      align-items:flex-start;
+      gap:14px;
+    }
+
+    .panel .bd{
+      padding:18px;
+      position:relative;
+      z-index:1;
+    }
+
+    .panel-title-wrap{
+      min-width:0;
+      max-width:44rem;
+    }
+
+    .panel-kicker{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-family:var(--sans);
+      font-size:.7rem;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      color:var(--ember);
+      padding:5px 8px;
+      border-radius:999px;
+      border:1px solid rgba(217,154,78,.24);
+      background:rgba(217,154,78,.08);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+    }
+
+    .panel .hd h2,
+    .panel-toggle-copy h2{
+      margin:8px 0 0;
+      font-family:var(--display);
+      font-size:1.08rem;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+    }
+
+    .panel-sub{
+      margin-top:6px;
+      color:var(--text-muted);
+      font-size:.96rem;
+      line-height:1.5;
+    }
+
+    .panel-meta-note,
+    .small{
+      font-family:var(--sans);
+      font-size:.74rem;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:var(--text-faint);
+    }
+
+    details.panel-toggle > summary,
+    details.inline-toggle > summary{
+      position:relative;
+      z-index:1;
+    }
+
+    details.panel-toggle > summary{
+      padding:18px 18px 16px;
+      align-items:flex-start;
+    }
+
+    .panel-toggle-copy{
+      min-width:0;
+      max-width:44rem;
+    }
+
+    .panel-toggle-meta{
+      gap:10px;
+      align-items:center;
+      color:var(--text-faint);
+    }
+
+    .panel-toggle-caret{
+      width:28px;
+      height:28px;
+      border-radius:999px;
+      border:1px solid var(--border-faint);
+      background:rgba(255,255,255,.04);
+      color:var(--text-main);
+    }
+
+    .journal-lede,
+    .pneuma-status-line{
+      margin:0;
+      line-height:1.55;
+    }
+
+    .pneuma-summary{
+      display:grid;
+      gap:12px;
+      margin-bottom:16px;
+    }
+
+    .status-chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      margin-right:10px;
+      border-radius:999px;
+      border:1px solid var(--border-faint);
+      background:rgba(255,255,255,.05);
+      font-family:var(--sans);
+      font-size:.76rem;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:var(--text-muted);
+      vertical-align:middle;
+    }
+
+    .status-chip.good{
+      border-color:rgba(125,155,111,.34);
+      color:#a8c49a;
+    }
+
+    .status-chip.warn{
+      border-color:rgba(217,154,78,.36);
+      color:#edc48c;
+    }
+
+    .status-chip.bad{
+      border-color:rgba(184,107,95,.38);
+      color:#d89b91;
+    }
+
+    .status-chip.neutral{
+      color:var(--text-muted);
+    }
+
+    .pneuma-grid{
+      gap:12px;
+    }
+
+    .pneuma-card{
+      min-height:152px;
+      padding:15px;
+      border:1px solid var(--border-faint);
+      border-radius:16px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.03), rgba(0,0,0,.1)),
+        rgba(12,14,15,.24);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.03);
+      display:grid;
+      gap:10px;
+      align-content:start;
+    }
+
+    .pneuma-card-button{
+      width:100%;
+      appearance:none;
+      cursor:pointer;
+      text-align:left;
+      font:inherit;
+      color:inherit;
+      transition:transform .12s ease, border-color .12s ease, background .12s ease, box-shadow .12s ease;
+    }
+
+    .pneuma-card-button:hover{
+      transform:translateY(-1px);
+    }
+
+    .pneuma-card-button:active{
+      transform:translateY(0);
+    }
+
+    .pneuma-card-button:focus-visible{
+      outline:none;
+      border-color:rgba(217,154,78,.48);
+      box-shadow:0 0 0 3px rgba(217,154,78,.14), inset 0 1px 0 rgba(255,255,255,.03);
+    }
+
+    .pneuma-card.pneuma-good{
+      border-color:rgba(125,155,111,.44);
+      background:
+        linear-gradient(180deg, rgba(125,155,111,.16), rgba(0,0,0,.08)),
+        rgba(12,14,15,.2);
+    }
+
+    .pneuma-card.pneuma-warn{
+      border-color:rgba(217,154,78,.38);
+      background:
+        linear-gradient(180deg, rgba(217,154,78,.16), rgba(0,0,0,.08)),
+        rgba(12,14,15,.2);
+    }
+
+    .pneuma-card.pneuma-bad{
+      border-color:rgba(184,107,95,.38);
+      background:
+        linear-gradient(180deg, rgba(184,107,95,.16), rgba(0,0,0,.08)),
+        rgba(12,14,15,.2);
+    }
+
+    .pneuma-card-top{
+      display:grid;
+      gap:4px;
+    }
+
+    .pneuma-token{
+      font-family:var(--sans);
+      font-size:.68rem;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+      color:var(--text-faint);
+    }
+
+    .pneuma-label{
+      font-family:var(--display);
+      font-size:.9rem;
+      letter-spacing:.05em;
+      text-transform:none;
+      color:var(--text-main);
+    }
+
+    .pneuma-value{
+      font-family:var(--display);
+      font-size:2.3rem;
+      line-height:1;
+      letter-spacing:.03em;
+    }
+
+    .pneuma-bonus{
+      font-family:var(--sans);
+      font-size:.72rem;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color:var(--text-faint);
+      padding-bottom:.24rem;
+    }
+
+    .pneuma-link,
+    .pneuma-mini-link{
+      border:1px solid var(--border-faint);
+      background:rgba(255,255,255,.04);
+      color:var(--text-main);
+      font-family:var(--sans);
+      font-size:.74rem;
+      letter-spacing:.1em;
+      text-transform:uppercase;
+      padding:7px 10px;
+    }
+
+    .pneuma-link:hover,
+    .pneuma-mini-link:hover{
+      border-color:rgba(217,154,78,.38);
+      background:rgba(255,255,255,.08);
+    }
+
+    .pneuma-empty{
+      margin-top:14px;
+      padding-top:14px;
+      border-top:1px solid var(--border-faint);
+      color:var(--text-muted);
+    }
+
+    .pneuma-dialog{
+      border:1px solid var(--border-soft);
+      border-radius:22px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.03), rgba(0,0,0,.08)),
+        linear-gradient(135deg, rgba(24,26,24,.99), rgba(30,24,20,.99));
+      color:var(--text-main);
+    }
+
+    .pneuma-dialog::backdrop{
+      background:rgba(5,6,7,.66);
+      backdrop-filter:blur(4px);
+    }
+
+    .pneuma-dialog-title{
+      font-family:var(--display);
+      letter-spacing:.06em;
+      text-transform:uppercase;
+    }
+
+    .pneuma-dialog-sub,
+    .pneuma-breakdown-note,
+    .pneuma-trend-copy,
+    .pneuma-breakdown-raw,
+    .pneuma-rubric-summary,
+    .pneuma-rubric-group-note,
+    .pneuma-rubric-note,
+    .pneuma-rubric-footnote,
+    .pneuma-chart-caption{
+      color:var(--text-muted);
+    }
+
+    .pneuma-dialog-close{
+      border:1px solid var(--border-faint);
+      background:rgba(255,255,255,.04);
+      color:var(--text-main);
+    }
+
+    .pneuma-trend,
+    .pneuma-breakdown-row,
+    .pneuma-rubric-summary,
+    .pneuma-rubric-group,
+    .pneuma-rubric-row{
+      border-color:var(--border-faint);
+      background:rgba(255,255,255,.035);
+    }
+
+    .pneuma-chart-grid{
+      stroke:rgba(168,159,144,.2);
+    }
+
+    .pneuma-chart-line{
+      stroke:var(--moon);
+    }
+
+    .pneuma-chart-dot{
+      fill:var(--ember);
+      stroke:#111715;
+    }
+
+    .pneuma-breakdown-trend{
+      color:var(--moon);
+    }
+
+    .pneuma-rubric-row.active{
+      border-color:rgba(118,199,183,.42);
+      background:rgba(118,199,183,.1);
+    }
+
+    .index-grid{
+      gap:16px;
+    }
+
+    .index-familiar{
+      grid-template-columns:230px 1fr;
+      gap:16px;
+      align-items:stretch;
+    }
+
+    .index-avatar{
+      min-height:250px;
+      border-radius:18px;
+      border:1px solid rgba(140,121,94,.28);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.035), rgba(0,0,0,.08)),
+        linear-gradient(180deg, rgba(20,23,25,.96), rgba(12,14,16,.98));
+      box-shadow:0 16px 32px rgba(0,0,0,.28);
+      padding:16px;
+      gap:14px;
+    }
+
+    .index-avatar.gentle{
+      border-color:rgba(217,154,78,.3);
+    }
+
+    .index-avatar.dry{
+      border-color:rgba(159,183,199,.3);
+    }
+
+    .index-avatar.firm{
+      border-color:rgba(184,107,95,.28);
+    }
+
+    .index-avatar-art{
+      padding:0;
+    }
+
+    .index-avatar-art img{
+      width:min(100%, 188px);
+      max-height:160px;
+      filter:drop-shadow(0 18px 28px rgba(0,0,0,.42));
+    }
+
+    .index-avatar-footer{
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    .index-voice{
+      border:1px solid var(--border-faint);
+      border-radius:18px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.03), rgba(0,0,0,.06)),
+        rgba(16,18,18,.42);
+      padding:18px;
+      gap:14px;
+    }
+
+    .index-note-title{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      margin-bottom:10px;
+      font-family:var(--sans);
+      font-size:.72rem;
+      letter-spacing:.2em;
+      text-transform:uppercase;
+      color:var(--ember);
+    }
+
+    .index-line{
+      font-size:1.42rem;
+      line-height:1.4;
+      font-weight:600;
+      margin:0;
+    }
+
+    .index-detail{
+      color:var(--text-muted);
+      line-height:1.5;
+    }
+
+    .index-step{
+      margin-top:12px;
+      color:var(--text-main);
+      line-height:1.55;
+    }
+
+    .index-step strong{
+      display:block;
+      margin-bottom:6px;
+      font-family:var(--sans);
+      font-size:.7rem;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      color:var(--ember);
+    }
+
+    .index-meta{
+      gap:10px;
+    }
+
+    .index-chip{
+      border:1px solid var(--border-faint);
+      background:rgba(255,255,255,.04);
+      font-family:var(--sans);
+      font-size:.74rem;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:var(--text-muted);
+    }
+
+    .index-chip.good{
+      border-color:rgba(125,155,111,.34);
+      color:#a8c49a;
+    }
+
+    .index-chip.warn{
+      border-color:rgba(217,154,78,.36);
+      color:#edc48c;
+    }
+
+    .index-chip.bad{
+      border-color:rgba(184,107,95,.38);
+      color:#d89b91;
+    }
+
+    .index-chip.gentle{
+      border-color:rgba(217,154,78,.36);
+      color:#edc48c;
+    }
+
+    .index-chip.dry{
+      border-color:rgba(159,183,199,.34);
+      color:#bfd2dd;
+    }
+
+    .index-chip.firm{
+      border-color:rgba(184,107,95,.38);
+      color:#d89b91;
+    }
+
+    .index-chip-button:hover,
+    .index-chip-button.is-active{
+      background:rgba(255,255,255,.1);
+      color:var(--text-main);
+    }
+
+    .index-tag-explanations{
+      margin-top:14px;
+      padding-top:14px;
+      border-top:1px solid var(--border-faint);
+    }
+
+    .index-tag-note{
+      gap:10px;
+      color:var(--text-muted);
+    }
+
+    .quest-billboard{
+      margin-bottom:14px;
+      padding:14px 15px;
+      border-radius:16px;
+      border:1px solid rgba(217,154,78,.26);
+      background:
+        linear-gradient(180deg, rgba(217,154,78,.12), rgba(255,255,255,.03)),
+        rgba(20,18,15,.36);
+    }
+
+    .quest-billboard-label{
+      margin-bottom:6px;
+      font-family:var(--sans);
+      font-size:.68rem;
+      letter-spacing:.2em;
+      text-transform:uppercase;
+      color:var(--ember);
+    }
+
+    .quest-billboard p{
+      margin:0;
+      color:var(--text-main);
+      line-height:1.55;
+    }
+
+    .quest-list,
+    .rites-list,
+    .phase-stack{
+      gap:12px;
+    }
+
+    .quest-card,
+    .rite-item,
+    .phase-card{
+      border:1px solid var(--border-faint);
+      border-radius:16px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.03), rgba(0,0,0,.08)),
+        rgba(13,15,15,.24);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.03);
+    }
+
+    .quest-card.good{
+      border-color:rgba(125,155,111,.34);
+      background:
+        linear-gradient(180deg, rgba(125,155,111,.14), rgba(0,0,0,.08)),
+        rgba(13,15,15,.22);
+    }
+
+    .quest-card.warn{
+      border-color:rgba(217,154,78,.3);
+      background:
+        linear-gradient(180deg, rgba(217,154,78,.14), rgba(0,0,0,.08)),
+        rgba(13,15,15,.22);
+    }
+
+    .quest-card.bad{
+      border-color:rgba(184,107,95,.3);
+      background:
+        linear-gradient(180deg, rgba(184,107,95,.14), rgba(0,0,0,.08)),
+        rgba(13,15,15,.22);
+    }
+
+    .quest-slot,
+    .intent-label{
+      font-family:var(--sans);
+      font-size:.68rem;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      color:var(--ember);
+    }
+
+    .quest-name,
+    .rite-name,
+    .phase-card h3{
+      font-size:1.04rem;
+      line-height:1.35;
+    }
+
+    .quest-status,
+    .rite-pill,
+    .phase-state,
+    .badge{
+      border-color:var(--border-faint);
+      background:rgba(255,255,255,.04);
+      color:var(--text-muted);
+      font-family:var(--sans);
+      font-size:.72rem;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+    }
+
+    .quest-status.good,
+    .phase-state.done,
+    .badge.done{
+      border-color:rgba(125,155,111,.34);
+      color:#a8c49a;
+      background:rgba(125,155,111,.12);
+    }
+
+    .quest-status.warn{
+      border-color:rgba(217,154,78,.36);
+      color:#edc48c;
+    }
+
+    .quest-status.bad{
+      border-color:rgba(184,107,95,.38);
+      color:#d89b91;
+    }
+
+    .quest-copy,
+    .quest-note,
+    .phase-copy,
+    .hint,
+    .phase-window{
+      color:var(--text-muted);
+      line-height:1.5;
+    }
+
+    .hint{
+      font-size:.9rem;
+    }
+
+    details.inline-toggle{
+      border-color:var(--border-faint);
+      border-radius:16px;
+      background:rgba(255,255,255,.03);
+    }
+
+    .inline-toggle-body{
+      color:var(--text-muted);
+    }
+
+    .quest-toggle-button{
+      border:1px solid var(--border-faint);
+      background:rgba(255,255,255,.05);
+      color:var(--text-main);
+      font-family:var(--sans);
+      font-size:.78rem;
+      letter-spacing:.1em;
+      text-transform:uppercase;
+    }
+
+    .rite-item{
+      padding:13px;
+    }
+
+    .rite-item.actionable:hover{
+      border-color:rgba(217,154,78,.34);
+      background:rgba(255,255,255,.06);
+    }
+
+    .rite-box{
+      border-color:var(--border-faint);
+      background:rgba(0,0,0,.2);
+      border-radius:9px;
+    }
+
+    .rite-box.checked{
+      border-color:rgba(125,155,111,.44);
+      background:rgba(125,155,111,.16);
+      color:#a8c49a;
+    }
+
+    .rite-box.manual{
+      border-color:rgba(217,154,78,.35);
+      background:rgba(217,154,78,.14);
+      color:#edc48c;
+    }
+
+    a.btn,
+    button.btn{
+      border:1px solid var(--border-faint);
+      border-radius:14px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.04), rgba(0,0,0,.08)),
+        rgba(24,20,18,.46);
+      color:var(--text-main);
+      font-family:var(--sans);
+      font-size:.8rem;
+      letter-spacing:.11em;
+      text-transform:uppercase;
+      box-shadow:0 12px 24px rgba(0,0,0,.22);
+    }
+
+    .btn:hover{
+      border-color:rgba(217,154,78,.4);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.06), rgba(0,0,0,.08)),
+        rgba(27,22,18,.54);
+    }
+
+    .btn.primary{
+      border-color:rgba(217,154,78,.36);
+      background:
+        linear-gradient(180deg, rgba(217,154,78,.18), rgba(255,255,255,.05)),
+        rgba(26,21,18,.52);
+    }
+
+    .btn.danger{
+      border-color:rgba(184,107,95,.38);
+      background:
+        linear-gradient(180deg, rgba(184,107,95,.18), rgba(255,255,255,.05)),
+        rgba(26,21,18,.52);
+    }
+
+    label{
+      font-family:var(--sans);
+      font-size:.78rem;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:var(--text-faint);
+      margin-bottom:7px;
+    }
+
+    input[type=text],
+    input[type=number],
+    input[type=datetime-local],
+    select,
+    textarea{
+      border:1px solid var(--border-faint);
+      border-radius:14px;
+      background:rgba(7,10,10,.44);
+      color:var(--text-main);
+      font-family:var(--serif);
+      font-size:1rem;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.02);
+    }
+
+    input[type=text]:focus,
+    input[type=number]:focus,
+    input[type=datetime-local]:focus,
+    select:focus,
+    textarea:focus{
+      border-color:rgba(217,154,78,.42);
+      box-shadow:0 0 0 3px rgba(217,154,78,.12);
+    }
+
+    input[type=range]{
+      accent-color:var(--ember);
+    }
+
+    .choice span,
+    .phase-status{
+      border-color:var(--border-faint);
+      border-radius:14px;
+      background:rgba(255,255,255,.04);
+      color:var(--text-muted);
+    }
+
+    .choice input:checked + span,
+    .phase-status.active{
+      border-color:rgba(217,154,78,.4);
+      background:rgba(217,154,78,.12);
+      color:var(--text-main);
+    }
+
+    .intent-banner{
+      border:1px solid rgba(217,154,78,.22);
+      background:
+        linear-gradient(180deg, rgba(217,154,78,.12), rgba(255,255,255,.04)),
+        rgba(15,17,16,.32);
+    }
+
+    .intent-banner.empty{
+      border-color:var(--border-faint);
+      background:rgba(255,255,255,.03);
+    }
+
+    details.log summary{
+      color:var(--text-muted);
+      font-family:var(--sans);
+      font-size:.78rem;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+    }
+
+    pre{
+      background:rgba(9,11,12,.72);
+      color:var(--text-main);
+      border-top:1px solid var(--border-faint);
+    }
+
+    code{
+      color:#f1d0a1;
+    }
+
+    @media (max-width: 1024px){
+      .grid,
+      .index-familiar{
+        grid-template-columns:1fr;
+      }
+
+      .panel .hd,
+      details.panel-toggle > summary{
+        flex-direction:column;
+        align-items:stretch;
+      }
+
+      .panel-meta-note,
+      .panel-toggle-meta{
+        justify-content:space-between;
+      }
+
+      .masthead{
+        min-height:320px;
+      }
+
+      .masthead-art{
+        object-position:center 52%;
+      }
+    }
+
+    @media (max-width: 720px){
+      .wrap{
+        padding:14px 10px 32px;
+      }
+
+      .masthead{
+        min-height:238px;
+        margin-bottom:14px;
+        border-radius:20px;
+      }
+
+      .masthead-copy{
+        width:100%;
+        padding:18px 14px 14px;
+        gap:10px;
+      }
+
+      .masthead-mark{
+        padding:5px 8px;
+        font-size:.64rem;
+        letter-spacing:.14em;
+      }
+
+      .masthead-brand{
+        align-items:flex-start;
+        gap:10px;
+      }
+
+      .masthead-icon{
+        width:38px;
+        height:38px;
+        border-radius:12px;
+      }
+
+      .masthead-title{
+        font-size:clamp(1.55rem, 10.5vw, 2.15rem);
+        letter-spacing:.06em;
+      }
+
+      .masthead-subtitle{
+        margin-top:6px;
+        font-size:.66rem;
+        letter-spacing:.18em;
+      }
+
+      .masthead-note{
+        max-width:27rem;
+        font-size:.9rem;
+        line-height:1.5;
+      }
+
+      .masthead-top{
+        top:10px;
+        right:10px;
+      }
+
+      .shortcut-menu > summary{
+        min-width:44px;
+        min-height:44px;
+        padding:11px;
+        justify-content:center;
+      }
+
+      .shortcut-menu[open] > summary{
+        top:14px;
+        right:14px;
+      }
+
+      .shortcut-panel{
+        top:14px;
+        left:14px;
+        right:14px;
+        width:auto;
+        max-height:calc(100vh - 28px);
+        padding-top:56px;
+      }
+
+      .shortcut-link,
+      .shortcut-static{
+        min-height:48px;
+        padding:12px;
+      }
+
+      .msg{
+        margin:12px 0 16px;
+        padding:12px 14px;
+      }
+
+      .panel,
+      details.panel-toggle,
+      details.log{
+        border-radius:16px;
+      }
+
+      .panel .hd,
+      details.panel-toggle > summary{
+        padding:14px 14px 12px;
+        gap:10px;
+      }
+
+      .panel .bd,
+      .inline-toggle-body{
+        padding:14px;
+      }
+
+      .panel .hd h2,
+      .panel-toggle-copy h2{
+        font-size:.96rem;
+      }
+
+      .panel-toggle-meta .small + .small{
+        display:none;
+      }
+
+      .pneuma-grid{
+        grid-template-columns:1fr;
+      }
+
+      .pneuma-summary{
+        gap:10px;
+        margin-bottom:14px;
+      }
+
+      .pneuma-card{
+        min-height:auto;
+        padding:14px;
+        border-radius:14px;
+        gap:6px;
+      }
+
+      .pneuma-value{
+        font-size:2.05rem;
+      }
+
+      .index-avatar{
+        min-height:198px;
+        padding:14px;
+      }
+
+      .index-avatar-art img{
+        width:min(100%, 160px);
+        max-height:128px;
+      }
+
+      .index-voice{
+        padding:16px 14px;
+        border-radius:16px;
+      }
+
+      .index-line{
+        font-size:1.2rem;
+      }
+
+      .index-detail,
+      .index-step{
+        font-size:.96rem;
+      }
+
+      .index-meta,
+      .quest-meta,
+      .rite-meta{
+        gap:6px;
+      }
+
+      .index-chip,
+      .quest-status,
+      .rite-pill,
+      .phase-state,
+      .badge{
+        font-size:.68rem;
+      }
+
+      .quest-billboard,
+      .quest-card,
+      .rite-item,
+      .phase-card{
+        padding:13px;
+        border-radius:14px;
+      }
+
+      .quest-name,
+      .rite-name,
+      .phase-card h3{
+        font-size:1rem;
+      }
+
+      .choice span,
+      .phase-status,
+      .quest-toggle-button{
+        min-height:46px;
+      }
+
+      .row{
+        display:grid;
+        grid-template-columns:1fr;
+      }
+
+      .row form,
+      .quest-actions form{
+        width:100%;
+      }
+
+      a.btn,
+      button.btn{
+        width:100%;
+        min-height:46px;
+        justify-content:center;
+      }
+
+      .uc-grid,
+      .quest-form-grid,
+      .quest-switcher-row{
+        grid-template-columns:1fr;
+      }
+
+      .choice-grid{
+        grid-template-columns:repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 520px){
+      .masthead{
+        min-height:220px;
+      }
+
+      .masthead-art{
+        object-position:center 50%;
+      }
+
+      .shortcut-panel{
+        left:10px;
+        right:10px;
+        top:10px;
+        max-height:calc(100vh - 20px);
+      }
+
+      .shortcut-menu[open] > summary{
+        top:10px;
+        right:10px;
+      }
+
+      .shortcut-link,
+      .shortcut-static{
+        align-items:flex-start;
+      }
+
+      .shortcut-meta{
+        font-size:.62rem;
+      }
+
+      .choice-grid{
+        grid-template-columns:1fr;
+      }
+
+      .phase-status,
+      .choice span{
+        padding:12px;
+      }
+
+      .journal-lede,
+      .pneuma-status-line{
+        font-size:.95rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+
+    <header class="masthead">
+      <img
+        class="masthead-art"
+        src="/static/Aurora%20Header.png"
+        alt="Aurora over a mountain lake with a lit cabin and northern lights"
+      />
+
+      <div class="masthead-top">
+        <details class="shortcut-menu">
+          <summary aria-label="Open shortcuts menu">
+            <span class="shortcut-toggle-bars" aria-hidden="true">
+              <span></span>
+              <span></span>
+              <span></span>
+            </span>
+          </summary>
+          <div class="shortcut-panel">
+            <div class="shortcut-header">
+              <div class="shortcut-title">House Shortcuts</div>
+            </div>
+            <div class="shortcut-list">
+              <div class="shortcut-static">
+                <div class="shortcut-main">
+                  <span class="shortcut-dot" aria-hidden="true"></span>
+                  <span class="shortcut-label">ATLAS</span>
+                </div>
+                <span class="shortcut-meta">Local stack</span>
+              </div>
+              <a class="shortcut-link" href="/focus-blocks">
+                <div class="shortcut-main">
+                  <span class="shortcut-dot" aria-hidden="true"></span>
+                  <span class="shortcut-label">Focus Blocks</span>
+                </div>
+                <span class="shortcut-meta">Planner</span>
+              </a>
+              <a class="shortcut-link" href="#home-assistant-demo" target="_blank" rel="noopener">
+                <div class="shortcut-main">
+                  <span class="shortcut-dot" aria-hidden="true"></span>
+                  <span class="shortcut-label">Home Assistant</span>
+                </div>
+                <span class="shortcut-meta">Automation</span>
+              </a>
+              <a class="shortcut-link" href="#media-server-demo" target="_blank" rel="noopener">
+                <div class="shortcut-main">
+                  <span class="shortcut-dot" aria-hidden="true"></span>
+                  <span class="shortcut-label">Jellyfin</span>
+                </div>
+                <span class="shortcut-meta">Media</span>
+              </a>
+              <a class="shortcut-link" href="#companion-project-demo" target="_blank" rel="noopener">
+                <div class="shortcut-main">
+                  <span class="shortcut-dot" aria-hidden="true"></span>
+                  <span class="shortcut-label">Canon &amp; Compass DEV</span>
+                </div>
+                <span class="shortcut-meta">Build</span>
+              </a>
+              <a class="shortcut-link" href="#dns-admin-demo" target="_blank" rel="noopener">
+                <div class="shortcut-main">
+                  <span class="shortcut-dot" aria-hidden="true"></span>
+                  <span class="shortcut-label">Pi-hole</span>
+                </div>
+                <span class="shortcut-meta">Network</span>
+              </a>
+              <a class="shortcut-link" href="#router-admin-demo" target="_blank" rel="noopener">
+                <div class="shortcut-main">
+                  <span class="shortcut-dot" aria-hidden="true"></span>
+                  <span class="shortcut-label">Router Admin</span>
+                </div>
+                <span class="shortcut-meta">Network</span>
+              </a>
+              <a class="shortcut-link" href="#network-admin-demo" target="_blank" rel="noopener">
+                <div class="shortcut-main">
+                  <span class="shortcut-dot warn" aria-hidden="true"></span>
+                  <span class="shortcut-label">Tailscale</span>
+                </div>
+                <span class="shortcut-meta">Remote</span>
+              </a>
+            </div>
+          </div>
+        </details>
+      </div>
+
+      <div class="masthead-copy">
+        <div class="masthead-brand">
+          <img class="masthead-icon" src="/static/favicon.png" alt="Aurora icon" />
+          <div class="masthead-title-wrap">
+            <h1 class="masthead-title">Aurora</h1>
+          </div>
+        </div>
+      </div>
+    </header>
+
+  {% if msg %}
+    <div class="msg">{{ msg }}</div>
+  {% endif %}
+
+  {% if index_runtime.tone == 'gentle' %}
+    {% set index_tone_label = 'Encouraging' %}
+  {% elif index_runtime.tone == 'dry' %}
+    {% set index_tone_label = 'Watchful' %}
+  {% elif index_runtime.tone == 'firm' %}
+    {% set index_tone_label = 'Stern' %}
+  {% else %}
+    {% set index_tone_label = index_runtime.tone|title %}
+  {% endif %}
+
+  <div class="panel pneuma-panel">
+    <div class="hd">
+      <div class="panel-title-wrap">
+        <h2>Pneuma</h2>
+      </div>
+    </div>
+    <div class="bd">
+      <div class="pneuma-grid">
+        <button class="pneuma-card pneuma-card-button pneuma-{{ pneuma_scores.capacity.tone }}" type="button" onclick="document.getElementById('{{ pneuma_scores.capacity.details_id }}').showModal()">
+          <div class="pneuma-card-top">
+            <div class="pneuma-token">Lamp</div>
+            <div class="pneuma-label">Capacity</div>
+          </div>
+          <div class="pneuma-value-line">
+            <div class="pneuma-value">{{ pneuma_scores.capacity.value }}{% if pneuma_scores.capacity.known %}%{% endif %}</div>
+            {% if pneuma_scores.capacity.quest_bonus_label %}
+              <div class="pneuma-bonus">{{ pneuma_scores.capacity.quest_bonus_label }}</div>
+            {% endif %}
+          </div>
+        </button>
+        <button class="pneuma-card pneuma-card-button pneuma-{{ pneuma_scores.alignment.tone }}" type="button" onclick="document.getElementById('{{ pneuma_scores.alignment.details_id }}').showModal()">
+          <div class="pneuma-card-top">
+            <div class="pneuma-token">Compass</div>
+            <div class="pneuma-label">Alignment</div>
+          </div>
+          <div class="pneuma-value-line">
+            <div class="pneuma-value">{{ pneuma_scores.alignment.value }}{% if pneuma_scores.alignment.known %}%{% endif %}</div>
+            {% if pneuma_scores.alignment.quest_bonus_label %}
+              <div class="pneuma-bonus">{{ pneuma_scores.alignment.quest_bonus_label }}</div>
+            {% endif %}
+          </div>
+        </button>
+        <button class="pneuma-card pneuma-card-button pneuma-{{ pneuma_scores.load.tone }}" type="button" onclick="document.getElementById('{{ pneuma_scores.load.details_id }}').showModal()">
+          <div class="pneuma-card-top">
+            <div class="pneuma-token">Pack</div>
+            <div class="pneuma-label">{{ pneuma_scores.load.display_name }}</div>
+          </div>
+          <div class="pneuma-value-line">
+            <div class="pneuma-value">{{ pneuma_scores.load.value }}{% if pneuma_scores.load.known %}%{% endif %}</div>
+            {% if pneuma_scores.load.quest_bonus_label %}
+              <div class="pneuma-bonus">{{ pneuma_scores.load.quest_bonus_label }}</div>
+            {% endif %}
+          </div>
+        </button>
+        <button class="pneuma-card pneuma-card-button pneuma-{{ pneuma_scores.resonance.tone }}" type="button" onclick="document.getElementById('{{ pneuma_scores.resonance.details_id }}').showModal()">
+          <div class="pneuma-card-top">
+            <div class="pneuma-token">Trail Footing</div>
+            <div class="pneuma-label">{{ pneuma_scores.resonance.display_name }}</div>
+          </div>
+          <div class="pneuma-value-line">
+            <div class="pneuma-value">{{ pneuma_scores.resonance.value }}{% if pneuma_scores.resonance.known %}%{% endif %}</div>
+            {% if pneuma_scores.resonance.quest_bonus_label %}
+              <div class="pneuma-bonus">{{ pneuma_scores.resonance.quest_bonus_label }}</div>
+            {% endif %}
+          </div>
+        </button>
+      </div>
+      {% if not pneuma_scores.available %}
+        <div class="pneuma-empty">
+          The score entities are not in Home Assistant restore-state yet. After Home Assistant reloads with the new Pneuma sensors, Aurora will surface them here automatically.
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="panel index-panel">
+    <div class="hd">
+      <div class="panel-title-wrap">
+        <h2>Index</h2>
+      </div>
+    </div>
+    <div class="bd">
+      <div class="index-grid">
+        <div class="index-familiar">
+          <div class="index-avatar {{ index_runtime.tone }}">
+            <div class="index-avatar-art">
+              <img src="{{ index_runtime.ui.sprite_path }}" alt="Index sprite" />
+            </div>
+            <div class="index-avatar-footer">
+              <span class="index-chip {{ index_runtime.tone }}">{{ index_tone_label }}</span>
+              <span class="small">{{ index_runtime.ui.sprite_label }}</span>
+            </div>
+          </div>
+          <div class="index-voice">
+            <div>
+              <p class="index-line">{{ index_runtime.commentary }}</p>
+              {% if index_runtime.trigger_detail %}
+                <p class="index-detail">{{ index_runtime.trigger_detail }}</p>
+              {% endif %}
+              {% if index_runtime.next_step %}
+                <p class="index-step">{{ index_runtime.next_step }}</p>
+              {% endif %}
+            </div>
+            <div class="index-meta">
+              {% if index_runtime.selection_tags %}
+                {% for tag in index_runtime.selection_tags %}
+                  <button
+                    class="index-chip index-chip-button {{ tag.tone }}"
+                    type="button"
+                    data-index-tag-button
+                    data-index-tag-label="{{ tag.label }}"
+                    data-index-tag-explanation="{{ tag.explanation }}"
+                    data-index-tag-tone="{{ tag.tone }}"
+                    aria-expanded="false"
+                    aria-controls="index-tag-explanations"
+                  >
+                    {{ tag.label }}
+                  </button>
+                {% endfor %}
+              {% else %}
+                <span class="index-chip">{{ index_runtime.ui.mode }}</span>
+              {% endif %}
+              <span class="index-chip">{{ index_runtime.tone|title }} tone</span>
+              <span class="index-chip">{{ index_runtime.ui.confidence_pct }}% confidence</span>
+            </div>
+            {% if index_runtime.selection_tags %}
+              <div class="index-tag-explanations" id="index-tag-explanations" hidden>
+                <div class="index-tag-note">
+                  <span class="index-chip" id="index-tag-active-label"></span>
+                  <span id="index-tag-active-text"></span>
+                </div>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% for score in [pneuma_scores.capacity, pneuma_scores.alignment, pneuma_scores.load, pneuma_scores.resonance] %}
+    <dialog id="{{ score.details_id }}" class="pneuma-dialog">
+      <div class="pneuma-dialog-inner">
+        <div class="pneuma-dialog-head">
+          <div>
+            <div class="pneuma-dialog-title">
+              {{ score.display_name }} reading
+            </div>
+            <div class="pneuma-dialog-sub">Current reading: {{ score.value }}{% if score.known %}%{% endif %}</div>
+          </div>
+          <form method="dialog">
+            <button class="pneuma-dialog-close" type="submit">Close</button>
+          </form>
+        </div>
+        <div class="pneuma-trend">
+          {% if score.chart %}
+            <div class="pneuma-chart">
+              <div class="pneuma-chart-meta">
+                <span>{{ score.chart.window_label }}</span>
+                <span>{{ score.chart.oldest_display }} -> {{ score.chart.latest_display }}</span>
+              </div>
+              <svg class="pneuma-chart-svg" viewBox="0 0 100 56" preserveAspectRatio="none" aria-hidden="true">
+                <line class="pneuma-chart-grid" x1="0" y1="56" x2="100" y2="56"></line>
+                <line class="pneuma-chart-grid" x1="0" y1="28" x2="100" y2="28"></line>
+                <line class="pneuma-chart-grid" x1="0" y1="0" x2="100" y2="0"></line>
+                <polyline class="pneuma-chart-line" points="{{ score.chart.points }}"></polyline>
+                <circle class="pneuma-chart-dot" cx="{{ score.chart.latest_x }}" cy="{{ score.chart.latest_y }}" r="2.5"></circle>
+              </svg>
+              <div class="pneuma-chart-caption">Range {{ score.chart.min_display }}-{{ score.chart.max_display }}</div>
+            </div>
+          {% endif %}
+          <div class="pneuma-trend-copy">{{ score.trend }}</div>
+        </div>
+        <div class="pneuma-breakdown-note">
+          {{ score.breakdown_note or "These are the actual inputs feeding this reading. Each line shows the last 7 days in hourly steps, and contribution is how much weight that signal is carrying right now." }}
+        </div>
+        <div class="pneuma-breakdown">
+          {% for item in score.breakdown %}
+            <div class="pneuma-breakdown-row">
+              <div>
+                <div class="pneuma-breakdown-label">{{ item.label }}</div>
+                <div class="pneuma-breakdown-raw">{{ item.raw }}</div>
+                <div class="pneuma-breakdown-visual">
+                  {% if item.chart %}
+                    <div class="pneuma-chart compact">
+                      <div class="pneuma-chart-meta">
+                        <span>{{ item.chart.window_label }}</span>
+                        <span>{{ item.chart.oldest_display }} -> {{ item.chart.latest_display }}</span>
+                      </div>
+                      <svg class="pneuma-chart-svg" viewBox="0 0 100 56" preserveAspectRatio="none" aria-hidden="true">
+                        <line class="pneuma-chart-grid" x1="0" y1="56" x2="100" y2="56"></line>
+                        <line class="pneuma-chart-grid" x1="0" y1="28" x2="100" y2="28"></line>
+                        <line class="pneuma-chart-grid" x1="0" y1="0" x2="100" y2="0"></line>
+                        <polyline class="pneuma-chart-line" points="{{ item.chart.points }}"></polyline>
+                        <circle class="pneuma-chart-dot" cx="{{ item.chart.latest_x }}" cy="{{ item.chart.latest_y }}" r="2.2"></circle>
+                      </svg>
+                    </div>
+                  {% endif %}
+                  <div class="pneuma-breakdown-trend">{{ item.trend }}</div>
+                  {% if item.scoring %}
+                    <div class="pneuma-breakdown-actions">
+                      <button class="pneuma-mini-link" type="button" onclick="document.getElementById('{{ item.scoring.dialog_id }}').showModal()">How read</button>
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="pneuma-breakdown-metric">
+                <strong>{{ item.score_display }}%</strong>
+                component score
+              </div>
+              <div class="pneuma-breakdown-metric">
+                <strong>{{ item.effective_weight }}%</strong>
+                active weight
+              </div>
+              <div class="pneuma-breakdown-metric">
+                <strong>{{ item.contribution }}</strong>
+                contribution
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+        {% for item in score.breakdown %}
+          {% if item.scoring %}
+            <dialog id="{{ item.scoring.dialog_id }}" class="pneuma-dialog pneuma-rubric-dialog">
+              <div class="pneuma-dialog-inner">
+                <div class="pneuma-dialog-head">
+                  <div>
+                    <div class="pneuma-dialog-title">{{ item.scoring.title }} reading</div>
+                    <div class="pneuma-dialog-sub">How this input is translated into a component score</div>
+                  </div>
+                  <form method="dialog">
+                    <button class="pneuma-dialog-close" type="submit">Close</button>
+                  </form>
+                </div>
+                <div class="pneuma-rubric-summary">{{ item.scoring.summary }}</div>
+                <div class="pneuma-rubric-meta">
+                  <span class="pneuma-rubric-pill">Current input {{ item.raw }}</span>
+                  <span class="pneuma-rubric-pill">Component {{ item.score_display }}%</span>
+                  <span class="pneuma-rubric-pill">Weight {{ item.effective_weight }}%</span>
+                  <span class="pneuma-rubric-pill">Contribution {{ item.contribution }}</span>
+                </div>
+                <div class="pneuma-rubric-groups">
+                  {% for group in item.scoring.groups %}
+                    <div class="pneuma-rubric-group">
+                      <div class="pneuma-rubric-group-title">{{ group.title }}</div>
+                      {% if group.note %}
+                        <div class="pneuma-rubric-group-note">{{ group.note }}</div>
+                      {% endif %}
+                      <div class="pneuma-rubric-rows">
+                        {% for row in group.rows %}
+                          <div class="pneuma-rubric-row{% if row.active %} active{% endif %}">
+                            <div>
+                              <div class="pneuma-rubric-input">{{ row.input }}</div>
+                              {% if row.note %}
+                                <div class="pneuma-rubric-note">{{ row.note }}</div>
+                              {% endif %}
+                            </div>
+                            <div class="pneuma-rubric-score">{{ row.score }}</div>
+                          </div>
+                        {% endfor %}
+                      </div>
+                    </div>
+                  {% endfor %}
+                </div>
+                <div class="pneuma-rubric-footnote">{{ item.scoring.footnote }}</div>
+              </div>
+            </dialog>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </dialog>
+  {% endfor %}
+
+  <div class="grid">
+      <div class="column-stack">
+        <div class="panel">
+          <div class="hd">
+            <div class="panel-title-wrap">
+              <h2>Daily Echoform</h2>
+            </div>
+            <div class="panel-meta-note">
+              {% if selected_echoform %}
+                {% if echoform_practiced %}
+                  practiced today
+                {% else %}
+                  chosen posture
+                {% endif %}
+              {% elif echoform_ranked %}
+                best fit first
+              {% else %}
+                morning selector
+              {% endif %}
+            </div>
+          </div>
+          <div class="bd">
+            {% if selected_echoform %}
+              {% if not echoform_practiced %}
+                <form method="post" action="/notion/echoforms/practice/ui">
+                  <input type="hidden" name="return_to" value="/" />
+                  <button class="echoform-active-card" type="submit">
+                    {% if selected_echoform.image_url %}
+                      <img class="echoform-art" src="{{ selected_echoform.image_url }}" alt="{{ selected_echoform.name }}" />
+                    {% else %}
+                      <div class="echoform-art echoform-art-fallback">Echoform art unavailable</div>
+                    {% endif %}
+                    <div class="echoform-copy">
+                      <div class="echoform-kicker">Today&apos;s Echoform</div>
+                      <div class="echoform-name">{{ selected_echoform.name }}</div>
+                      {% if selected_echoform.why_preview %}
+                        <div class="echoform-subtext">{{ selected_echoform.why_preview|join(' • ') }}</div>
+                      {% endif %}
+                      {% if selected_echoform.activation_phrase %}
+                        <div class="echoform-text">{{ selected_echoform.activation_phrase }}</div>
+                      {% endif %}
+                      {% if selected_echoform.shadow_drift %}
+                        <div class="echoform-shadow">Shadow: {{ selected_echoform.shadow_drift }}</div>
+                      {% endif %}
+                      <div class="echoform-meta">
+                        {% if selected_echoform.score_display %}
+                          <span class="rite-pill">Score {{ selected_echoform.score_display }}</span>
+                        {% endif %}
+                        {% if selected_echoform.effective_level_display or selected_echoform.level_display %}
+                          <span class="rite-pill">Level {{ selected_echoform.effective_level_display or selected_echoform.level_display }}</span>
+                        {% endif %}
+                        {% if selected_echoform.xp_display %}
+                          <span class="rite-pill">Lifetime XP {{ selected_echoform.xp_display }}</span>
+                        {% endif %}
+                        {% if selected_echoform.legacy_signal_xp_display %}
+                          <span class="rite-pill">Legacy Signal XP {{ selected_echoform.legacy_signal_xp_display }}</span>
+                        {% endif %}
+                        {% if selected_echoform.resonance_day_xp_display %}
+                          <span class="rite-pill">Resonance Practice XP {{ selected_echoform.resonance_day_xp_display }}</span>
+                        {% endif %}
+                        {% if selected_echoform.formation_log_count %}
+                          <span class="rite-pill">{{ selected_echoform.formation_log_count }} formation {% if selected_echoform.formation_log_count == 1 %}log{% else %}logs{% endif %}</span>
+                        {% endif %}
+                      </div>
+                      <div class="echoform-subtext">Practice logs to Resonance Index. Lifetime XP and level come from the Echoform Codex.</div>
+                      <div class="echoform-action">Tap to log in Resonance Index</div>
+                    </div>
+                  </button>
+                </form>
+              {% else %}
+                <div class="echoform-active-card logged">
+                  {% if selected_echoform.image_url %}
+                    <img class="echoform-art" src="{{ selected_echoform.image_url }}" alt="{{ selected_echoform.name }}" />
+                  {% else %}
+                    <div class="echoform-art echoform-art-fallback">Echoform art unavailable</div>
+                  {% endif %}
+                  <div class="echoform-copy">
+                    <div class="echoform-kicker">Today&apos;s Echoform</div>
+                    <div class="echoform-name">{{ selected_echoform.name }}</div>
+                    {% if selected_echoform.why_preview %}
+                      <div class="echoform-subtext">{{ selected_echoform.why_preview|join(' • ') }}</div>
+                    {% endif %}
+                    {% if selected_echoform.activation_phrase %}
+                      <div class="echoform-text">{{ selected_echoform.activation_phrase }}</div>
+                    {% endif %}
+                    {% if selected_echoform.shadow_drift %}
+                      <div class="echoform-shadow">Shadow: {{ selected_echoform.shadow_drift }}</div>
+                    {% endif %}
+                    <div class="echoform-meta">
+                      {% if selected_echoform.score_display %}
+                        <span class="rite-pill">Score {{ selected_echoform.score_display }}</span>
+                      {% endif %}
+                      {% if selected_echoform.effective_level_display or selected_echoform.level_display %}
+                        <span class="rite-pill">Level {{ selected_echoform.effective_level_display or selected_echoform.level_display }}</span>
+                      {% endif %}
+                      {% if selected_echoform.xp_display %}
+                        <span class="rite-pill">Lifetime XP {{ selected_echoform.xp_display }}</span>
+                      {% endif %}
+                      {% if selected_echoform.daily_xp_display %}
+                        <span class="rite-pill">Today&apos;s XP {{ selected_echoform.daily_xp_display }}</span>
+                      {% endif %}
+                      {% if selected_echoform.legacy_signal_xp_display %}
+                        <span class="rite-pill">Legacy Signal XP {{ selected_echoform.legacy_signal_xp_display }}</span>
+                      {% endif %}
+                      {% if selected_echoform.resonance_day_xp_display %}
+                        <span class="rite-pill">Resonance Practice XP {{ selected_echoform.resonance_day_xp_display }}</span>
+                      {% endif %}
+                      {% if selected_echoform.formation_log_count %}
+                        <span class="rite-pill">{{ selected_echoform.formation_log_count }} formation {% if selected_echoform.formation_log_count == 1 %}log{% else %}logs{% endif %}</span>
+                      {% endif %}
+                    </div>
+                    <div class="echoform-subtext">Practice logs to Resonance Index. Lifetime XP and level come from the Echoform Codex.</div>
+                    <div class="echoform-action">Logged in Resonance Index</div>
+                  </div>
+                </div>
+              {% endif %}
+
+              {% if echoform_can_reselect %}
+                <details class="inline-toggle">
+                  <summary>
+                    <span class="inline-toggle-copy">Choose a different Echoform</span>
+                    <span class="panel-toggle-caret" aria-hidden="true">+</span>
+                  </summary>
+                  <div class="inline-toggle-body">
+                    <div class="echoform-carousel">
+                      {% for echoform in echoform_alternatives %}
+                        <form class="echoform-choice" method="post" action="/notion/echoforms/select/ui">
+                          <input type="hidden" name="return_to" value="/" />
+                          <input type="hidden" name="echoform_id" value="{{ echoform.page_id }}" />
+                          <button class="echoform-choice-card" type="submit">
+                            {% if echoform.image_url %}
+                              <img class="echoform-art" src="{{ echoform.image_url }}" alt="{{ echoform.name }}" />
+                            {% else %}
+                              <div class="echoform-art echoform-art-fallback">Echoform art unavailable</div>
+                            {% endif %}
+                            <div class="echoform-copy">
+                              <div class="echoform-name">{{ echoform.name }}</div>
+                              <div class="echoform-meta">
+                                {% if echoform.score_display %}
+                                  <span class="rite-pill">Score {{ echoform.score_display }}</span>
+                                {% endif %}
+                                {% if echoform.effective_level_display or echoform.level_display %}
+                                  <span class="rite-pill">Level {{ echoform.effective_level_display or echoform.level_display }}</span>
+                                {% endif %}
+                                {% if echoform.xp_display %}
+                                  <span class="rite-pill">Lifetime XP {{ echoform.xp_display }}</span>
+                                {% endif %}
+                              </div>
+                              {% if echoform.why_preview %}
+                                <div class="echoform-subtext">{{ echoform.why_preview|join(' • ') }}</div>
+                              {% endif %}
+                              {% if echoform.activation_phrase %}
+                                <div class="echoform-text">{{ echoform.activation_phrase }}</div>
+                              {% endif %}
+                            </div>
+                            <div class="echoform-footer">
+                              <span class="echoform-action">Choose posture</span>
+                            </div>
+                          </button>
+                        </form>
+                      {% endfor %}
+                    </div>
+                  </div>
+                </details>
+              {% endif %}
+            {% elif echoform_ranked %}
+              <div class="echoform-carousel">
+                {% for echoform in echoform_ranked %}
+                  <form class="echoform-choice" method="post" action="/notion/echoforms/select/ui">
+                    <input type="hidden" name="return_to" value="/" />
+                    <input type="hidden" name="echoform_id" value="{{ echoform.page_id }}" />
+                    <button class="echoform-choice-card" type="submit">
+                      {% if echoform.image_url %}
+                        <img class="echoform-art" src="{{ echoform.image_url }}" alt="{{ echoform.name }}" />
+                      {% else %}
+                        <div class="echoform-art echoform-art-fallback">Echoform art unavailable</div>
+                      {% endif %}
+                      <div class="echoform-copy">
+                        <div class="echoform-kicker">{% if loop.first %}Top fit{% else %}Rank {{ loop.index }}{% endif %}</div>
+                        <div class="echoform-name">{{ echoform.name }}</div>
+                        <div class="echoform-meta">
+                          {% if echoform.score_display %}
+                            <span class="rite-pill">Score {{ echoform.score_display }}</span>
+                          {% endif %}
+                          {% if echoform.effective_level_display or echoform.level_display %}
+                            <span class="rite-pill">Level {{ echoform.effective_level_display or echoform.level_display }}</span>
+                          {% endif %}
+                          {% if echoform.xp_display %}
+                            <span class="rite-pill">Lifetime XP {{ echoform.xp_display }}</span>
+                          {% endif %}
+                          {% if echoform.formation_log_count %}
+                            <span class="rite-pill">{{ echoform.formation_log_count }} formation {% if echoform.formation_log_count == 1 %}log{% else %}logs{% endif %}</span>
+                          {% endif %}
+                        </div>
+                        {% if echoform.why_preview %}
+                          <div class="echoform-subtext">{{ echoform.why_preview|join(' • ') }}</div>
+                        {% endif %}
+                        {% if echoform.activation_phrase %}
+                          <div class="echoform-text">{{ echoform.activation_phrase }}</div>
+                        {% endif %}
+                        {% if echoform.shadow_drift %}
+                          <div class="echoform-shadow">Shadow: {{ echoform.shadow_drift }}</div>
+                        {% endif %}
+                      </div>
+                      <div class="echoform-footer">
+                        <span class="echoform-action">Choose posture</span>
+                      </div>
+                    </button>
+                  </form>
+                {% endfor %}
+              </div>
+              {% if echoform_ranked|length > 1 %}
+                <div class="echoform-swipe-note">Swipe to move from the highest-scored Echoform into the rest of today&apos;s descending fit.</div>
+              {% endif %}
+            {% elif echoform_error %}
+              <div class="hint">{{ echoform_error }}</div>
+            {% elif echoform_note %}
+              <div class="hint">{{ echoform_note }}</div>
+            {% else %}
+              <div class="hint">No Echoforms yet.</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="hd">
+            <div class="panel-title-wrap">
+              <h2>Quest Offer</h2>
+            </div>
+            <div class="panel-meta-note">
+              {% if quest_focus_offer %}
+                {% if quest_focus_offer.status == 'Accepted' %}
+                  quest in hand
+                {% else %}
+                  quest completed
+                {% endif %}
+              {% elif quest_offers %}
+                {{ quest_offers_all_count }} live today
+              {% else %}
+                morning selector
+              {% endif %}
+            </div>
+          </div>
+          <div class="bd">
+            {% if quest_offers %}
+              <div class="quest-list">
+                {% for offer in quest_offers %}
+                  {% set is_completed = offer.status in quest_completion_status_options %}
+                  <div class="quest-card {{ offer.status_tone }}">
+                    <div class="quest-top">
+                      <div>
+                        {% if not is_completed %}
+                          <div class="quest-slot">{{ offer.offer_slot or 'Quest' }}</div>
+                        {% endif %}
+                        <div class="quest-name">{{ offer.quest_name }}</div>
+                      </div>
+                      <span class="quest-status {{ offer.status_tone }}">{{ offer.status }}</span>
+                    </div>
+                    {% if not is_completed and offer.success_condition %}
+                      <div class="quest-copy">{{ offer.success_condition }}</div>
+                    {% endif %}
+                    {% if not is_completed and offer.why_offered %}
+                      <div class="hint">{{ offer.why_offered }}</div>
+                    {% endif %}
+                    {% if offer.pneuma_target or offer.domain or offer.energy_required or offer.time_cap or offer.difficulty or (not is_completed and (offer.offer_score is not none or offer.source)) %}
+                      <div class="quest-meta">
+                        {% if offer.pneuma_target %}
+                          <span class="rite-pill">Boosts {{ offer.pneuma_target }}</span>
+                        {% endif %}
+                        {% if offer.domain %}
+                          <span class="rite-pill">{{ offer.domain }}</span>
+                        {% endif %}
+                        {% if offer.energy_required %}
+                          <span class="rite-pill">{{ offer.energy_required }} energy</span>
+                        {% endif %}
+                        {% if offer.time_cap %}
+                          <span class="rite-pill">{{ offer.time_cap }}</span>
+                        {% endif %}
+                        {% if offer.difficulty %}
+                          <span class="rite-pill">{{ offer.difficulty }}</span>
+                        {% endif %}
+                        {% if not is_completed and offer.offer_score is not none %}
+                          <span class="rite-pill">Score {{ offer.offer_score|int }}</span>
+                        {% endif %}
+                        {% if not is_completed and offer.source %}
+                          <span class="rite-pill">{{ offer.source }}</span>
+                        {% endif %}
+                      </div>
+                    {% endif %}
+                    {% if not is_completed and offer.shrink_version %}
+                      <details class="inline-toggle">
+                        <summary>
+                          <span class="inline-toggle-copy">Need a smaller version?</span>
+                          <span class="panel-toggle-caret" aria-hidden="true">+</span>
+                        </summary>
+                        <div class="inline-toggle-body">{{ offer.shrink_version }}</div>
+                      </details>
+                    {% endif %}
+                    {% if offer.status == 'Offered' %}
+                      <div class="quest-actions">
+                        <form method="post" action="/notion/quests/accept/ui">
+                          <input type="hidden" name="quest_run_id" value="{{ offer.run_page_id }}" />
+                          <input type="hidden" name="return_to" value="/" />
+                          <button class="btn primary" type="submit">Take Commission</button>
+                        </form>
+                      </div>
+                    {% endif %}
+                    {% if offer.status == 'Accepted' %}
+                      <details class="inline-toggle quest-toggle">
+                        <summary>
+                          <span class="quest-toggle-button">
+                            Record How It Went
+                          </span>
+                        </summary>
+                        <div class="inline-toggle-body">
+                          <form method="post" action="/notion/quests/complete/ui">
+                            <input type="hidden" name="quest_run_id" value="{{ offer.run_page_id }}" />
+                            <input type="hidden" name="return_to" value="/" />
+                            <div class="quest-form-grid">
+                              <label>
+                                Status
+                                <select name="status">
+                                  {% for status_option in quest_completion_status_options %}
+                                    <option value="{{ status_option }}" {% if offer.status == status_option %}selected{% endif %}>
+                                      {{ status_option }}
+                                    </option>
+                                  {% endfor %}
+                                </select>
+                              </label>
+                              <label>
+                                Cost Felt
+                                <select name="cost_felt">
+                                  {% for cost_option in quest_cost_felt_options %}
+                                    <option value="{{ cost_option }}" {% if (offer.cost_felt or offer.difficulty) == cost_option %}selected{% endif %}>
+                                      {{ cost_option }}
+                                    </option>
+                                  {% endfor %}
+                                </select>
+                              </label>
+                            </div>
+                            <div class="quest-note">XP is calculated from the quest itself and then adjusted by Cost Felt.</div>
+                            <div class="quest-actions">
+                              <button class="btn primary" type="submit">Save Outcome</button>
+                            </div>
+                          </form>
+                        </div>
+                      </details>
+                    {% endif %}
+                    {% if is_completed %}
+                      {% if quest_switch_options %}
+                        <form class="quest-switcher" method="post" action="/notion/quests/accept/ui">
+                          <input type="hidden" name="return_to" value="/" />
+                          <div class="quest-switcher-row">
+                            <label>
+                              Choose another quest from today's original 3
+                              <select name="quest_run_id">
+                                {% for switch_offer in quest_switch_options %}
+                                  <option value="{{ switch_offer.run_page_id }}">
+                                    {{ switch_offer.offer_slot or 'Quest' }} - {{ switch_offer.quest_name }}
+                                  </option>
+                                {% endfor %}
+                              </select>
+                            </label>
+                            <button class="btn primary" type="submit">Switch Commission</button>
+                          </div>
+                        </form>
+                      {% elif quest_offers_note %}
+                        <div class="quest-note">{{ quest_offers_note }}</div>
+                      {% endif %}
+                    {% endif %}
+                  </div>
+                {% endfor %}
+              </div>
+            {% elif quest_offers_error %}
+              <div class="hint">{{ quest_offers_error }}</div>
+            {% elif quest_offers_note %}
+              <div class="hint">{{ quest_offers_note }}</div>
+            {% else %}
+              <div class="hint">No quest offers yet.</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <details class="panel panel-toggle">
+          <summary>
+            <div class="panel-toggle-copy panel-title-wrap">
+              <h2>To Do</h2>
+            </div>
+            <div class="panel-toggle-meta">
+              <span class="small">{{ rhythmic_rites_pending_count }} provisions ready</span>
+              <span class="small">open/close</span>
+              <span class="panel-toggle-caret" aria-hidden="true">+</span>
+            </div>
+          </summary>
+          <div class="bd">
+            {% if rhythmic_rites %}
+              <div class="rites-list">
+                {% for rite in rhythmic_rites %}
+                  {% if rite.complete_today %}
+                    <div class="rite-item">
+                      <span class="rite-box checked">✓</span>
+                      <div class="rite-copy">
+                        <div class="rite-name-row">
+                          <div class="rite-name">{{ rite.name }}</div>
+                          <div class="small">Packed today</div>
+                        </div>
+                        {% if rite.description %}
+                          <div class="hint">{{ rite.description }}</div>
+                        {% endif %}
+                        <div class="rite-meta">
+                          {% if rite.cadence_label %}
+                            <span class="rite-pill">{{ rite.cadence_label }}</span>
+                          {% endif %}
+                          {% if rite.latest_complete_label %}
+                            <span class="rite-pill">Last: {{ rite.latest_complete_label }}</span>
+                          {% endif %}
+                        </div>
+                      </div>
+                    </div>
+                  {% elif rite.manual %}
+                    {% if rite.name == "Abiding" %}
+                      <button
+                        class="rite-item actionable rite-popout-trigger"
+                        type="button"
+                        onclick="document.getElementById('abiding-dialog-{{ loop.index }}').showModal()"
+                      >
+                        <span class="rite-box manual">LOG</span>
+                        <div class="rite-copy">
+                          <div class="rite-name-row">
+                            <div class="rite-name">{{ rite.name }}</div>
+                            <div class="small">Log in Aurora</div>
+                          </div>
+                          {% if rite.description %}
+                            <div class="hint">{{ rite.description }}</div>
+                          {% endif %}
+                          <div class="rite-meta">
+                            {% if rite.cadence_label %}
+                              <span class="rite-pill">{{ rite.cadence_label }}</span>
+                            {% endif %}
+                            {% if rite.latest_complete_label %}
+                              <span class="rite-pill">Last: {{ rite.latest_complete_label }}</span>
+                            {% endif %}
+                            <span class="rite-pill">Tap to reflect</span>
+                          </div>
+                        </div>
+                      </button>
+                      <dialog id="abiding-dialog-{{ loop.index }}" class="pneuma-dialog rite-dialog">
+                        <div class="pneuma-dialog-inner">
+                          <div class="pneuma-dialog-head">
+                            <div>
+                              <div class="pneuma-dialog-title">Log Abiding in Aurora</div>
+                              <div class="pneuma-dialog-sub">Save today&apos;s reflection to Undercurrent and mark Abiding in The Signal Field.</div>
+                            </div>
+                            <form method="dialog">
+                              <button class="pneuma-dialog-close" type="submit">Close</button>
+                            </form>
+                          </div>
+                          <form class="rite-dialog-form" method="post" action="/notion/rhythmic-rites/abiding/ui">
+                            <input type="hidden" name="return_to" value="/" />
+                            <div>
+                              <label for="abiding-reflection-{{ loop.index }}">Abiding reflection</label>
+                              <textarea
+                                id="abiding-reflection-{{ loop.index }}"
+                                name="reflection_note"
+                                placeholder="What surfaced, settled, or became clear during Abiding?"
+                                required
+                              ></textarea>
+                            </div>
+                            <div class="rite-dialog-note">
+                              This stores the reflection in Undercurrent under <strong>Abiding Notes</strong> and logs today&apos;s Abiding rite in The Signal Field.
+                            </div>
+                            <div class="row rite-dialog-actions">
+                              <button class="btn" type="button" onclick="document.getElementById('abiding-dialog-{{ loop.index }}').close()">Cancel</button>
+                              <button class="btn primary" type="submit">Log Abiding</button>
+                            </div>
+                          </form>
+                        </div>
+                      </dialog>
+                    {% else %}
+                      <div class="rite-item">
+                        <span class="rite-box manual">MAN</span>
+                        <div class="rite-copy">
+                          <div class="rite-name-row">
+                            <div class="rite-name">{{ rite.name }}</div>
+                            <div class="small">Held elsewhere</div>
+                          </div>
+                          {% if rite.description %}
+                            <div class="hint">{{ rite.description }}</div>
+                          {% endif %}
+                          <div class="rite-meta">
+                            {% if rite.cadence_label %}
+                              <span class="rite-pill">{{ rite.cadence_label }}</span>
+                            {% endif %}
+                            {% if rite.latest_complete_label %}
+                              <span class="rite-pill">Last: {{ rite.latest_complete_label }}</span>
+                            {% endif %}
+                          </div>
+                        </div>
+                      </div>
+                    {% endif %}
+                  {% else %}
+                    <form class="rite-form" method="post" action="/notion/rhythmic-rites/complete/ui">
+                      <input type="hidden" name="rite_page_id" value="{{ rite.page_id }}" />
+                      <input type="hidden" name="task_name" value="{{ rite.name }}" />
+                      <input type="hidden" name="return_to" value="/" />
+                      <label class="rite-item actionable">
+                        <input
+                          class="rite-toggle"
+                          type="checkbox"
+                          name="complete"
+                          value="1"
+                          onchange="this.form.submit()"
+                          aria-label="Mark {{ rite.name }} complete"
+                        />
+                        <span class="rite-box"></span>
+                        <div class="rite-copy">
+                          <div class="rite-name-row">
+                            <div class="rite-name">{{ rite.name }}</div>
+                            <div class="small">Stow in pack</div>
+                          </div>
+                          {% if rite.description %}
+                            <div class="hint">{{ rite.description }}</div>
+                          {% endif %}
+                          <div class="rite-meta">
+                            {% if rite.cadence_label %}
+                              <span class="rite-pill">{{ rite.cadence_label }}</span>
+                            {% endif %}
+                            {% if rite.latest_complete_label %}
+                              <span class="rite-pill">Last: {{ rite.latest_complete_label }}</span>
+                            {% endif %}
+                          </div>
+                        </div>
+                      </label>
+                    </form>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            {% elif rhythmic_rites_error %}
+              <div class="hint">{{ rhythmic_rites_error }}</div>
+            {% else %}
+              <div class="hint">The pack is clear for now.</div>
+            {% endif %}
+          </div>
+        </details>
+
+        <!-- LEFT: Actions -->
+        <div class="panel">
+        <div class="hd">
+          <div class="panel-title-wrap">
+            <h2>Dispatch</h2>
+          </div>
+        </div>
+        <div class="bd">
+
+          <div class="row" style="margin-bottom:12px;">
+            <form method="post" action="/wake">
+              <button class="btn primary" type="submit">Wake Atelier</button>
+            </form>
+          </div>
+          <details class="inline-toggle">
+            <summary>
+              <span class="inline-toggle-copy">Open workshop tools</span>
+              <div class="panel-toggle-meta">
+                <span class="small">open/close</span>
+                <span class="panel-toggle-caret" aria-hidden="true">+</span>
+              </div>
+            </summary>
+            <div class="inline-toggle-body">
+              <div class="row" style="margin-bottom:12px;">
+                <form method="post" action="/ops/rebuild/aurora/ui">
+                  <input type="hidden" name="mode" value="reload" />
+                  <button class="btn" type="submit">Reload Aurora</button>
+                </form>
+                <form method="post" action="/ops/rebuild/aurora/ui">
+                  <input type="hidden" name="mode" value="rebuild" />
+                  <button class="btn" type="submit">Rebuild Aurora</button>
+                </form>
+              </div>
+
+              <div class="panel" style="background:var(--panel2);">
+                <div class="hd">
+                  <h2>Abiding Moments</h2>
+                </div>
+                <div class="bd">
+                  <form method="post" action="/download/abiding-moments/latest-hymn">
+                    <div class="hint">
+                      Pull the latest <strong>Hymn</strong> from Notion, search YouTube for that title plus
+                      “hymn”, and download the top hit as an mp4 into the main music folder.
+                    </div>
+                    <div class="row" style="margin-top:10px;">
+                      <button class="btn" type="submit">Download Latest Hymn MP4</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+
+              <div class="panel" style="background:var(--panel2); margin-top:12px;">
+                <div class="hd">
+                  <h2>Download Music</h2>
+                </div>
+                <div class="bd">
+                  <form method="post" action="/download/music">
+                    <label>Playlist URL</label>
+                    <input type="text" name="url" value="https://youtube.com/playlist?list=PLajptEIbN-rhsyuTRTKx_bNnirS6EoMwh" />
+                    <div class="row" style="margin-top:10px;">
+                      <button class="btn" type="submit">Run</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+
+              <div class="panel" style="background:var(--panel2); margin-top:12px;">
+                <div class="hd">
+                  <h2>Download Videos</h2>
+                </div>
+                <div class="bd">
+                  <form method="post" action="/download/videos">
+                    <label>Playlist URL</label>
+                    <input type="text" name="url" value="https://youtube.com/playlist?list=PLajptEIbN-rgeLAacmelcah6A4qjCNBr-" />
+                    <div class="row" style="margin-top:10px;">
+                      <button class="btn" type="submit">Run</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </details>
+
+        </div>
+      </div>
+
+      <div class="column-stack">
+        <div class="panel" style="background:var(--panel2); margin-top:12px;">
+          <div class="hd">
+            <div class="panel-title-wrap">
+              <h2>Undercurrent</h2>
+            </div>
+            <div class="panel-meta-note">{{ current_undercurrent_phase|title }} window live</div>
+          </div>
+
+          <div class="bd">
+            <div class="intent-banner{% if not daily_intent %} empty{% endif %}">
+              <div class="intent-label">Today's Intent</div>
+              <p>
+                {% if daily_intent %}
+                  {{ daily_intent }}
+                {% else %}
+                  No intent logged.
+                {% endif %}
+              </p>
+            </div>
+
+            <div class="phase-status-grid">
+              {% for phase in undercurrent_phases %}
+                <a
+                  class="phase-status {% if current_undercurrent_phase == phase.key %}active{% endif %} {% if undercurrent_done.get(phase.key) %}done{% endif %}"
+                  href="{{ phase.ui_path }}"
+                >
+                  <div class="phase-status-top">
+                    <div class="phase-status-title">{{ phase.label }}</div>
+                    <div class="phase-state {% if undercurrent_done.get(phase.key) %}done{% endif %}">
+                      {% if undercurrent_done.get(phase.key) %}Logged{% else %}Open{% endif %}
+                    </div>
+                  </div>
+                  <div class="phase-window">{{ phase.window }}</div>
+                  <div class="phase-open">
+                    {% if current_undercurrent_phase == phase.key %}
+                      Current
+                    {% elif undercurrent_done.get(phase.key) %}
+                      Logged
+                    {% else %}
+                      Open
+                    {% endif %}
+                  </div>
+                </a>
+              {% endfor %}
+            </div>
+
+            <div class="phase-stack">
+              {% set return_to = '/' %}
+              {% include "_undercurrent_forms.html" %}
+            </div>
+          </div>
+        </div>
+
+        {% include "_daily_notes_form.html" %}
+        {% include "_book_reflection_form.html" %}
+        {% include "_state_shift_form.html" %}
+
+        {% if last_log and log_preview %}
+          <details class="log" open>
+            <summary>
+              <span>Last Log: {{ last_log }}</span>
+              <span class="small">expand/collapse</span>
+            </summary>
+            <pre>{{ log_preview }}</pre>
+          </details>
+        {% endif %}
+      </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const panel = document.getElementById('index-tag-explanations');
+      const label = document.getElementById('index-tag-active-label');
+      const text = document.getElementById('index-tag-active-text');
+      const buttons = Array.from(document.querySelectorAll('[data-index-tag-button]'));
+
+      if (!panel || !label || !text || !buttons.length) {
+        return;
+      }
+
+      const resetButtons = () => {
+        buttons.forEach((button) => {
+          button.classList.remove('is-active');
+          button.setAttribute('aria-expanded', 'false');
+        });
+      };
+
+      buttons.forEach((button) => {
+        button.addEventListener('click', () => {
+          const isActive = button.classList.contains('is-active');
+          resetButtons();
+
+          if (isActive) {
+            panel.hidden = true;
+            label.textContent = '';
+            label.className = 'index-chip';
+            text.textContent = '';
+            return;
+          }
+
+          const tagLabel = button.dataset.indexTagLabel || button.textContent || 'Why';
+          const tagExplanation = button.dataset.indexTagExplanation || '';
+          const tagTone = button.dataset.indexTagTone || '';
+
+          button.classList.add('is-active');
+          button.setAttribute('aria-expanded', 'true');
+          panel.hidden = false;
+          label.textContent = tagLabel;
+          label.className = `index-chip ${tagTone}`.trim();
+          text.textContent = tagExplanation;
+        });
+      });
+    }());
+
+    (function () {
+      const shortcutMenu = document.querySelector('.shortcut-menu');
+      const shortcutLinks = Array.from(document.querySelectorAll('.shortcut-link'));
+
+      if (!shortcutMenu) {
+        return;
+      }
+
+      const syncShortcutState = () => {
+        document.body.style.overflow = shortcutMenu.open ? 'hidden' : '';
+      };
+
+      shortcutMenu.addEventListener('toggle', syncShortcutState);
+
+      document.addEventListener('click', (event) => {
+        if (!shortcutMenu.open) {
+          return;
+        }
+        if (shortcutMenu.contains(event.target)) {
+          return;
+        }
+        shortcutMenu.open = false;
+      });
+
+      shortcutLinks.forEach((link) => {
+        link.addEventListener('click', () => {
+          shortcutMenu.open = false;
+        });
+      });
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+          shortcutMenu.open = false;
+        }
+      });
+    }());
+  </script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<div class="panel" style="background:var(--panel2); margin-top:12px;">
+  <div class="hd">
+    <div class="panel-title-wrap">
+      <h2>Daily Notes</h2>
+    </div>
+    <div class="panel-meta-note">appends to today&apos;s Undercurrent</div>
+  </div>
+
+  <div class="bd">
+    <form class="phase-card" method="post" action="/notion/undercurrent/daily-notes/ui">
+      <input type="hidden" name="return_to" value="{{ return_to|default('/') }}" />
+
+      <h3>Drop a Note</h3>
+      <p class="phase-copy">Add a freeform note to today&apos;s <strong>Daily Notes</strong>. New text is appended below anything already there.</p>
+
+      <div>
+        <label>Daily Notes</label>
+        <textarea
+          name="note"
+          placeholder="Capture what happened, what mattered, or what you want to remember."
+          required
+        ></textarea>
+      </div>
+
+      <div class="row" style="margin-top:12px;">
+        <button class="btn primary" type="submit">Append Daily Note</button>
+      </div>
+    </form>
+  </div>
+</div>
